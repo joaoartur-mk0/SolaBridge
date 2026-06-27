@@ -16,7 +16,17 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
-        );
+        if ($request->is('api/*')) {
+            Log::error('Erro Fatal na API: ' . $e->getMessage(), [
+                'url' => $request->fullUrl(),
+                'user_id' => auth()->id ?? 'Nao Autenticado',
+                'file' => $e->getFile(),
+                'line' => $->getLine()
+            ]);
+
+            return response()->json([
+                'sucess' => false,
+                'message' => 'Ocorreu um erro interno no servidor. Nossa equipe já foi notificada',
+            ], 500);
+        }
     })->create();
