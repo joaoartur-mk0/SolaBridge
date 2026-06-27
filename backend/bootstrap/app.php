@@ -7,26 +7,49 @@ use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
-        health: '/up',
+        web: __DIR__ . "/../routes/web.php",
+        api: __DIR__ . "/../routes/api.php",
+        commands: __DIR__ . "/../routes/console.php",
+        health: "/up",
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        if ($request->is('api/*')) {
-            Log::error('Erro Fatal na API: ' . $e->getMessage(), [
-                'url' => $request->fullUrl(),
-                'user_id' => auth()->id ?? 'Nao Autenticado',
-                'file' => $e->getFile(),
-                'line' => $->getLine()
-            ]);
+    ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (
+            NotFoundHttpException $e,
+            Request $request,
+        ) {
+            if ($request->is("api/*")) {
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" =>
+                            "O recurso solicitado não foi encontrado no sistema.",
+                    ],
+                    404,
+                );
+            }
+        });
 
-            return response()->json([
-                'sucess' => false,
-                'message' => 'Ocorreu um erro interno no servidor. Nossa equipe já foi notificada',
-            ], 500);
-        }
-    })->create();
+        $exceptions->render(function (\Throwable $e, Request $request) {
+            if ($request->is("api/*")) {
+                Log::error("Erro Fatal na API: " . $e->getMessage(), [
+                    "url" => $request->fullUrl(),
+                    "user_id" => auth()->id() ?? "Não Autenticado",
+                    "file" => $e->getFile(),
+                    "line" => $e->getLine(),
+                ]);
+
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" =>
+                            "Ocorreu um erro interno no servidor. Nossa equipe já foi notificada.",
+                    ],
+                    500,
+                );
+            }
+        });
+    })
+    ->create();
