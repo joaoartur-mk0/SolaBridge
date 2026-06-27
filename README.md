@@ -1,75 +1,200 @@
-# React + TypeScript + Vite
+# SolaBridge
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema web de gestão contábil simplificada e emissão de NFS-e, desenvolvido como projeto acadêmico para a disciplina de **Introdução à Contabilidade** do curso de Análise e Desenvolvimento de Sistemas.
 
-Currently, two official plugins are available:
+## Sobre o projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+O **SolaBridge** tem como objetivo oferecer uma solução simples e acessível para auxiliar MEIs, profissionais autônomos, empresas de serviços e contadores na organização financeira, gestão de clientes, controle de serviços e emissão de Nota Fiscal de Serviço Eletrônica (NFS-e).
 
-## React Compiler
+Nesta primeira versão, o foco do projeto será a criação de uma interface web funcional utilizando dados simulados, permitindo validar o fluxo principal do sistema antes da integração completa com o backend e com a API pública de emissão de NFS-e.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologias utilizadas
 
-## Expanding the ESLint configuration
+### Frontend
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend previsto
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* PHP
+* Laravel
+* PostgreSQL
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Integrações previstas
 
+* API pública do governo para emissão de NFS-e
+
+## Funcionalidades previstas
+
+* Dashboard com indicadores financeiros
+* Cadastro e listagem de clientes/tomadores
+* Cadastro e listagem de serviços
+* Tela de emissão de NFS-e
+* Histórico de notas fiscais
+* Controle financeiro básico
+* Configurações da empresa
+* Integração futura com backend Laravel
+* Integração futura com API de NFS-e
+
+## Estrutura inicial do projeto
+
+```txt
+src/
+├── assets/
+├── components/
+│   ├── layout/
+│   ├── shared/
+│   └── ui/
+├── hooks/
+├── layouts/
+├── mocks/
+├── pages/
+├── services/
+├── types/
+├── utils/
+├── App.tsx
+├── main.tsx
+└── index.css
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Como rodar o projeto
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 1. Clonar o repositório
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone URL_DO_REPOSITORIO
 ```
+
+### 2. Acessar a pasta do projeto
+
+```bash
+cd SolaBridge
+```
+
+### 3. Instalar as dependências
+
+```bash
+npm install
+```
+
+### 4. Rodar o projeto em ambiente de desenvolvimento
+
+```bash
+npm run dev
+```
+
+O projeto ficará disponível, por padrão, em:
+
+```txt
+http://localhost:5173
+```
+
+## Scripts disponíveis
+
+```bash
+npm run dev
+```
+
+Inicia o servidor de desenvolvimento.
+
+```bash
+npm run build
+```
+
+Gera a versão de produção do projeto.
+
+```bash
+npm run preview
+```
+
+Executa uma prévia local da versão de produção.
+
+## Fluxo de trabalho com Git
+
+A branch principal do projeto será:
+
+```txt
+main
+```
+
+Durante o desenvolvimento, cada nova funcionalidade deve ser criada em uma branch separada.
+
+Exemplos:
+
+```bash
+git checkout -b feat/layout-base
+git checkout -b feat/dashboard
+git checkout -b feat/customers-page
+git checkout -b feat/services-page
+git checkout -b feat/invoices-page
+```
+
+## Padrão de commits
+
+Sugestão de padrão para commits:
+
+```txt
+feat: nova funcionalidade
+fix: correção de erro
+style: ajuste visual ou formatação
+refactor: refatoração de código
+docs: alteração na documentação
+chore: configuração ou manutenção do projeto
+```
+
+Exemplos:
+
+```bash
+git commit -m "chore: initial React Vite setup"
+git commit -m "feat: add base layout"
+git commit -m "feat: add customers page"
+git commit -m "style: improve dashboard cards"
+```
+
+## Módulos planejados
+
+### Dashboard
+
+Tela inicial com indicadores como:
+
+* Receita do mês
+* Despesas do mês
+* Saldo atual
+* Notas emitidas
+* Notas pendentes
+* Impostos estimados
+
+### Clientes
+
+Cadastro e listagem de clientes/tomadores de serviço.
+
+### Serviços
+
+Cadastro e listagem dos serviços prestados pela empresa.
+
+### Emissão de NFS-e
+
+Fluxo para selecionar cliente, serviço, valor, descrição e emitir ou simular uma NFS-e.
+
+### Notas fiscais
+
+Histórico de notas emitidas, pendentes, rejeitadas ou canceladas.
+
+### Financeiro
+
+Controle básico de entradas, saídas, categorias e status de pagamento.
+
+### Configurações
+
+Dados da empresa necessários para operação do sistema e emissão fiscal.
+
+## Status do projeto
+
+Em desenvolvimento inicial.
+
+## Objetivo acadêmico
+
+Este projeto foi desenvolvido com fins acadêmicos, buscando aplicar conceitos de desenvolvimento web, organização de software, banco de dados, integração de sistemas e fundamentos de contabilidade.
