@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCustomerRequest extends FormRequest
+class StoreSupplierRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -39,9 +39,9 @@ class StoreCustomerRequest extends FormRequest
             "documento.required" =>
                 "Parâmetro obrigatório nulo | o documento do cliente é obrigatório para cadastro",
             "tipo_pessoa.required" =>
-                "Parâmetro obrigatório nulo| o tipo de pessoa do cliente é obrigatório para o cadastro",
+                "Parâmetro obrigatório | o tipo de pessoa do cliente é obrigatório para o cadastro",
             "nome.required" =>
-                "Parâmetro obrigatório nulo| o nome do cliente é obrigatório para o ",
+                "Parâmetro obrigatório | o nome do cliente é obrigatório para o ",
             "documento.max" =>
                 "Parâmetro inválido | o documento deve conter no máximo 20 caractéres",
             "nome.max" =>

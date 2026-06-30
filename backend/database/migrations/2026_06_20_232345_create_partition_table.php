@@ -24,7 +24,7 @@ return new class extends Migration {
             $table
                 ->foreignId("produto_id")
                 ->nullable()
-                ->constrained("produtos_servicos")
+                ->constrained("produtos")
                 ->nullOnDelete();
             $table->decimal("valor", 15, 2);
             $table->enum("natureza", ["D", "C"]);

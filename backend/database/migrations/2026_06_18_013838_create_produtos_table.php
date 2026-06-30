@@ -10,12 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create("produtos_servicos", function (Blueprint $table) {
+        Schema::create("produtos", function (Blueprint $table) {
             $table->id();
-            $table->foreignId("tenants_id")->constrained()->cascadeOnDelete();
+
+            $table
+                ->foreignId("tenant_id")
+                ->constrained("tenants")
+                ->cascadeOnDelete();
+
             $table->string("codigo_sku")->nullable();
             $table->string("nome");
-            $table->enum("tipo", ["PRODUTO", "SERVICO"]);
             $table->decimal("preco_venda", 15, 2)->default(0);
             $table->decimal("custo_medio", 15, 2)->default(0);
             $table->timestamps();
@@ -27,6 +31,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists("produtos_servicos");
+        Schema::dropIfExists("produtos");
     }
 };

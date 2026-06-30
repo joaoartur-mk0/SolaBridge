@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProdutosServicos extends Model{
-    protected $table = "produtos_servicos";
+class Produto extends Model{
+    protected $table = "produtos";
     protected $fillable = [
         "tenants_id",
         "codigo_sku",
