@@ -1,8 +1,13 @@
-export  interface Invoice {
-    id: string;
-    customerId: string;
-    serviceId: string;
-    issueDate: string;
-    amount: number;
-    status: "Emitida" | "Pendente" | "Cancelada" | "Rejeitada";
+import type { InvoiceStatus } from "./common";
+import type { InvoiceId, ServiceId, CustomerId } from "./ids";
+import type { Money } from "./money";
+import type { ISODate } from "./date";
+
+export interface Invoice {
+    id:InvoiceId;
+    customerId: CustomerId;
+    serviceId: ServiceId;
+    issueDate: ISODate;
+    amount: Money;
+    status: InvoiceStatus; 
 }

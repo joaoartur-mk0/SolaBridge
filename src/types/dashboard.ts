@@ -1,5 +1,5 @@
 export interface DashboardData{
-    monthlyRevenus: number;
+    monthlyRevenue: number;
     monthlyExpenses: number;
     balance: number;
     invoicesIssued: number;

@@ -2,12 +2,12 @@ import type { FinanceEntry } from "../types/finance";
 
 export const finances: FinanceEntry[]= [
     {
-        id: "1",
+        id: "FIN-001",
         description: "pagamento Empresa Alpha",
-        category: "Servicos",
+        category: "Serviços",
         type: "Receita",
         value: 3500,
         date:"2026-06-20",
-        paid: true
+        status:"Pago"
     }
 ];

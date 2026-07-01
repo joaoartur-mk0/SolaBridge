@@ -2,14 +2,14 @@ import type { Service } from "../types/service";
 
 export const services: Service[] = [
     {
-        id:"1",
+        id:"SER-001",
         name:"Desenvolvimento Web",
         description:"Cracao de Sites",
         price: 3500
     },
 
     {
-        id: "2",
+        id: "SER-002",
         name: "Consultoria",
         description: "Consultoria em TI",
         price: 1200

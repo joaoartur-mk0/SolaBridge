@@ -1,7 +1,7 @@
 import type { DashboardData } from "../types/dashboard";
 
 export const dashboard: DashboardData = {
-    monthlyRevenus: 25000,
+    monthlyRevenue: 25000,
     monthlyExpenses: 8200,
     balance: 16800,
     invoicesIssued: 32,

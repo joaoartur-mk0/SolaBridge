@@ -1,6 +1,9 @@
+import type { ServiceId } from "./ids";
+import type { Money } from "./money";
+
 export interface Service {
-    id: string;
+    id: ServiceId;
     name: string;
     description: string;
-    price: number;
+    price: Money;
 }
