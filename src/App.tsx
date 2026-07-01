@@ -1,122 +1,107 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { AppLayout } from "./components/layout/AppLayout";
+import { PageHeader } from "./components/shared/PageHeader";
+import { SectionHeader } from "./components/shared/SectionHeader";
+import { StatusBadge } from "./components/shared/StatusBadge";
+import { Button } from "./components/ui/Button";
+import { Input } from "./components/ui/Input";
+import { Select } from "./components/ui/Select";
+import { StatCard } from "./components/ui/StatCard";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./components/ui/Table";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <AppLayout>
+      <div className="space-y-6">
+        <PageHeader
+          title="Dashboard"
+          description="Visão geral da gestão contábil e fiscal da empresa."
+          action={<Button>Nova NFS-e</Button>}
+        />
 
-      <div className="ticks"></div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            title="Receita do mês"
+            value="R$ 12.450,00"
+            description="Total faturado em junho"
+          />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <StatCard
+            title="Notas emitidas"
+            value="18"
+            description="NFS-e emitidas no mês"
+          />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          <StatCard
+            title="Impostos estimados"
+            value="R$ 622,50"
+            description="Estimativa com base nas notas"
+          />
+
+          <StatCard
+            title="Pendências"
+            value="3"
+            description="Notas aguardando processamento"
+          />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Input label="Cliente" placeholder="Nome do cliente" />
+
+          <Select label="Status">
+            <option>Todos</option>
+            <option>Emitida</option>
+            <option>Pendente</option>
+            <option>Rejeitada</option>
+          </Select>
+        </div>
+
+        <div className="space-y-4">
+          <SectionHeader
+            title="Últimas notas fiscais"
+            description="Notas emitidas recentemente no sistema."
+          />
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Número</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              <TableRow>
+                <TableCell>NFSE-000123</TableCell>
+                <TableCell>Tech Serviços LTDA</TableCell>
+                <TableCell>R$ 1.250,00</TableCell>
+                <TableCell>
+                  <StatusBadge status="issued" />
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell>NFSE-000124</TableCell>
+                <TableCell>Maria Souza</TableCell>
+                <TableCell>R$ 850,00</TableCell>
+                <TableCell>
+                  <StatusBadge status="pending" />
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </AppLayout>
+  );
 }
 
-export default App
+export default App;
