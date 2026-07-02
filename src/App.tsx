@@ -1,107 +1,59 @@
+import { useState } from "react";
+
 import { AppLayout } from "./components/layout/AppLayout";
-import { PageHeader } from "./components/shared/PageHeader";
-import { SectionHeader } from "./components/shared/SectionHeader";
-import { StatusBadge } from "./components/shared/StatusBadge";
 import { Button } from "./components/ui/Button";
-import { Input } from "./components/ui/Input";
-import { Select } from "./components/ui/Select";
-import { StatCard } from "./components/ui/StatCard";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./components/ui/Table";
+
+import CustomersPage from "./pages/CustomersPage";
+import ServicesPage from "./pages/ServicesPage";
+
+type CurrentPage = "customers" | "services";
 
 function App() {
-  return (
-    <AppLayout>
-      <div className="space-y-6">
-        <PageHeader
-          title="Dashboard"
-          description="Visão geral da gestão contábil e fiscal da empresa."
-          action={<Button>Nova NFS-e</Button>}
-        />
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            title="Receita do mês"
-            value="R$ 12.450,00"
-            description="Total faturado em junho"
-          />
+    const [currentPage, setCurrentPage] =
+        useState<CurrentPage>("customers");
 
-          <StatCard
-            title="Notas emitidas"
-            value="18"
-            description="NFS-e emitidas no mês"
-          />
+    return (
 
-          <StatCard
-            title="Impostos estimados"
-            value="R$ 622,50"
-            description="Estimativa com base nas notas"
-          />
+        <AppLayout>
 
-          <StatCard
-            title="Pendências"
-            value="3"
-            description="Notas aguardando processamento"
-          />
-        </div>
+            <div className="space-y-6">
 
-        <div className="grid gap-4 lg:grid-cols-3">
-          <Input label="Cliente" placeholder="Nome do cliente" />
+                <div className="flex flex-wrap gap-3 border-b border-slate-800 pb-4">
 
-          <Select label="Status">
-            <option>Todos</option>
-            <option>Emitida</option>
-            <option>Pendente</option>
-            <option>Rejeitada</option>
-          </Select>
-        </div>
+                    <Button
+                        variant={
+                            currentPage === "customers"
+                                ? "primary"
+                                : "secondary"
+                        }
+                        onClick={() => setCurrentPage("customers")}
+                    >
+                        Clientes
+                    </Button>
 
-        <div className="space-y-4">
-          <SectionHeader
-            title="Últimas notas fiscais"
-            description="Notas emitidas recentemente no sistema."
-          />
+                    <Button
+                        variant={
+                            currentPage === "services"
+                                ? "primary"
+                                : "secondary"
+                        }
+                        onClick={() => setCurrentPage("services")}
+                    >
+                        Serviços
+                    </Button>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Número</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Valor</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
+                </div>
 
-            <TableBody>
-              <TableRow>
-                <TableCell>NFSE-000123</TableCell>
-                <TableCell>Tech Serviços LTDA</TableCell>
-                <TableCell>R$ 1.250,00</TableCell>
-                <TableCell>
-                  <StatusBadge status="issued" />
-                </TableCell>
-              </TableRow>
+                {currentPage === "customers" && <CustomersPage />}
 
-              <TableRow>
-                <TableCell>NFSE-000124</TableCell>
-                <TableCell>Maria Souza</TableCell>
-                <TableCell>R$ 850,00</TableCell>
-                <TableCell>
-                  <StatusBadge status="pending" />
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    </AppLayout>
-  );
+                {currentPage === "services" && <ServicesPage />}
+
+            </div>
+
+        </AppLayout>
+
+    );
 }
 
 export default App;
