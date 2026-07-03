@@ -17,7 +17,8 @@ return new class extends Migration {
             $table->timestamp("email_verified_at")->nullable();
             $table->string("password");
             $table->rememberToken();
-            $table->foreignId("tenants_id")->constrained("tenants");
+            $table->foreignId("tenant_id")->constrained("tenants");
+            $table->enum("role", ["admin", "contador", "operador"]);
             $table->timestamps();
         });
 

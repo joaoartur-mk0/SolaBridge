@@ -13,21 +13,26 @@ class CompraController extends Controller
 
     protected $compraService;
 
-    public function __construct(CompraService $compraService) {
+    public function __construct(CompraService $compraService)
+    {
         $this->compraService = $compraService;
     }
 
-    public function store(StoreCompraRequest $request): JsonResponse {
+    public function store(StoreCompraRequest $request): JsonResponse
+    {
         $dadosLimpos = $request->validated();
 
-        $tenant_id 1;
+        $tenant_id = auth()->user()->tenant_id;
 
-        $resultado = $this->compraService->processarCompra($dadosLimpos, $tenant_id);
+        $resultado = $this->compraService->processarCompra(
+            $dadosLimpos,
+            $tenant_id,
+        );
 
         return $this->successResponse(
-            'Compra registrada com sucesso! Estoque e financeiro atualizados',
+            "Compra registrada com sucesso! Estoque e financeiro atualizados",
             $resultado,
-            201
+            201,
         );
     }
 }

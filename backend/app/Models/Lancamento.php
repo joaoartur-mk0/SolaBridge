@@ -9,7 +9,7 @@ class Lancamento extends Model
     protected $table = "lançamentos";
     public $timestamps = false;
     protected $fillable = [
-        "tenants_id",
+        "tenant_id",
         "customer_id",
         "supplier_id",
         "titulo_id",

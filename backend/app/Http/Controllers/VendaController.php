@@ -21,7 +21,7 @@ class VendaController extends Controller
     public function store(StoreVendaRequest $request): JsonResponse
     {
         $dadosLimpos = $request->validated();
-        $tenant_id = 1;
+        $tenant_id = auth()->user()->tenant_id;
 
         $resultado = $this->vendaService->processarVenda(
             $dadosLimpos,

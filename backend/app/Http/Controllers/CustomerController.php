@@ -13,18 +13,23 @@ class CustomerController extends Controller
 
     protected $customService;
 
-    public function __construct(CustomerService $customService){
+    public function __construct(CustomerService $customService)
+    {
         $this->customerService = $customService;
     }
 
-    public function store(StoreCustomerRequest $request): JsonResponse {
-        $dadosLimpos = %request->validated();
-        $tenant_id = 1;
-        $customer = $this->customerService->criarCustomer($dadosLimpos, $tenant_id);
-        return $this->sucessResponse(
-            'Cliente registrado com sucesso!',
+    public function store(StoreCustomerRequest $request): JsonResponse
+    {
+        $dadosLimpos = $request->validated();
+        $tenant_id = auth()->user()->tenant_id;
+        $customer = $this->customerService->registrarCustomer(
+            $dadosLimpos,
+            $tenant_id,
+        );
+        return $this->successResponse(
+            "Cliente registrado com sucesso!",
             $customer,
-            201
+            201,
         );
     }
 }

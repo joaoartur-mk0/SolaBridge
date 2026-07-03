@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Conta extends Model
 {
-    protected $fillable = ["tenants_id", "codigo", "nome", "tipo", "natureza"];
+    protected $fillable = ["tenant_id", "codigo", "nome", "tipo", "natureza"];
     public $timestamps = false;
     protected $fillable = ["codigo", "nome", "tipo", "natureza"];
 

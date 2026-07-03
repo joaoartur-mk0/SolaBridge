@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\TenantScope;
 
 class Supplier extends Model
 {
-    protected $table = "supplier";
+    protected $table = "suppliers";
     protected $fillable = [
-        "tenants_id",
+        "tenant_id",
         "tipo_pessoa",
         "documento",
         "nome",

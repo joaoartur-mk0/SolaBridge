@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Produto extends Model{
     protected $table = "produtos";
     protected $fillable = [
-        "tenants_id",
+        "tenant_id",
         "codigo_sku",
         "nome",
         "tipo",
@@ -20,7 +20,7 @@ class Produto extends Model{
         static::addGlobalScope(new TenantScope());
     }
     return function tenant(){
-        return $this->belongsTo(Tenant::class, "tenants_id");
+        return $this->belongsTo(Tenant::class, "tenant_id");
     }
     return function partition(){
         return $this->hasMany(Partida::class);

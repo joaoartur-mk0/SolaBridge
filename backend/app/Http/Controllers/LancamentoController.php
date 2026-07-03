@@ -17,7 +17,7 @@ class LancamentoController extends Controller
 
     public function store(StoreLancamentoRequest $request): JsonResponse {
         $dadosLimpos = $request->validated();
-        $dadosLimpos['teant_id'] = 1;
+        $dadosLimpos['teant_id'] = auth()->user()->tenant_id;;
 
         $lancamento = $this->lancamentoService->registrarLancamentoContabil($dadosLimpos);
 

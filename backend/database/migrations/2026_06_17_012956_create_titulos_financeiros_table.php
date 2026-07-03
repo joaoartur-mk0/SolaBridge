@@ -13,17 +13,17 @@ return new class extends Migration {
         Schema::create("titulos_financeiros", function (Blueprint $table) {
             $table->id();
             $table
-                ->foreignId("tenants_id")
+                ->foreignId("tenant_id")
                 ->constrained("tenants")
                 ->cascadeOnDelete();
             $table
                 ->foreignId("customer_id")
                 ->nullable()
-                ->constrained("customer");
+                ->constrained("customers");
             $table
                 ->foreignId("supplier_id")
                 ->nullable()
-                ->constrained("supplier");
+                ->constrained("suppliers");
             $table->enum("tipo", ["RECEBER", "PAGAR"]);
             $table->string("descricao");
             $table->decimal("valor_total", 15, 2);

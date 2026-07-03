@@ -21,9 +21,9 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): JsonResponse
     {
         $dadosLimpos = $request->validated();
-        $tenant_id = 1;
+        $tenant_id = auth()->user()->tenant_id;
 
-        $user = $this->userService->criarUsuario($dadosLimpos, $tenant_id);
+        $user = $this->userService->registrarUsuario($dadosLimpos, $tenant_id);
 
         return $this->successResponse(
             "Usuário registrado com sucesso!",

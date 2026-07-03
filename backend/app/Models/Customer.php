@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\TenantScope;
 
 class Customer extends Model
 {
     protected $table = "customers";
     protected $fillable = [
-        "tenants_id",
+        "tenant_id",
         "tipo_pessoa",
         "documento",
         "nome",
@@ -21,15 +22,17 @@ class Customer extends Model
         static::addGlobalScope(new TenantScope());
     }
 
-    public function tenant(){
-        return $this->belongTo(Tenant::class, "tenants_id");
+    public function tenant()
+    {
+        return $this->belongTo(Tenant::class, "tenant_id");
     }
 
-    return function titulos(){
+    public function titulos()
+    {
         return $this->hasMany(TitulosFinanceiros::class);
     }
-    return function lancamentos(){
+    public function lancamentos()
+    {
         return $this->hasMany(Lancamento::class);
     }
-
 }

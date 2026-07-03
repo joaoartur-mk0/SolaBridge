@@ -13,18 +13,23 @@ class SupplierController extends Controller
 
     protected $supplierService;
 
-    public function __construct(SupplierService $supplierService){
+    public function __construct(SupplierService $supplierService)
+    {
         $this->supplierService = $supplierService;
     }
 
-    public function store(StoreCustomerRequest $request): JsonResponse {
-        $dadosLimpos = %request->validated();
-        $tenant_id = 1;
-        $supplier = $this->supplierService->criarSupplier($dadosLimpos, $tenant_id);
-        return $this->sucessResponse(
-            'Fornecedor registrado com sucesso!',
-            $customer,
-            201
+    public function store(StoreSupplierRequest $request): JsonResponse
+    {
+        $dadosLimpos = $request->validated();
+        $tenant_id = auth()->user()->tenant_id;
+        $supplier = $this->supplierService->registrarSupplier(
+            $dadosLimpos,
+            $tenant_id,
+        );
+        return $this->successResponse(
+            "Fornecedor registrado com sucesso!",
+            $supplier,
+            201,
         );
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->string("codigo")->unique();
             $table
-                ->foreignId("tenants_id")
+                ->foreignId("tenant_id")
                 ->constrained("tenants")
                 ->onDelete("cascade");
             $table->string("nome");
