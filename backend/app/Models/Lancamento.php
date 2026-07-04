@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lancamento extends Model
 {
-    protected $table = "lançamentos";
+    protected $table = "lancamentos";
     public $timestamps = false;
     protected $fillable = [
         "tenant_id",
@@ -19,11 +19,11 @@ class Lancamento extends Model
 
     public function partidas()
     {
-        return $this->hasMany(Partida::class, "lançamento_id");
+        return $this->hasMany(Partida::class, "lancamento_id");
     }
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, "tenants_id");
+        return $this->belongsTo(Tenant::class, "tenant_id");
     }
     public function customer()
     {

@@ -23,11 +23,11 @@ class Supplier extends Model
     }
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, "tenants_id");
+        return $this->belongsTo(Tenant::class, "tenant_id");
     }
     public function titulos()
     {
-        return $this->hasMany(TitulosFinanceiros::class);
+        return $this->hasMany(TituloFinanceiro::class);
     }
     public function lancamento()
     {

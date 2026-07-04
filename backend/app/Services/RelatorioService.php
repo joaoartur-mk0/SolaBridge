@@ -177,13 +177,13 @@ class RelatorioService
             $passivoCirculantesDebitos - $passivoCirculantesCreditos;
 
         $indice = 0;
-        if ($totalAtivosCirculantes > 0) {
-            $indice = $totalAtivosCirculantes / $totalAtivosCirculantes;
+        if ($passivoAtivosCirculantes > 0) {
+            $indice = $totalAtivosCirculantes / $passivoAtivosCirculantes;
         }
 
         return [
-            "ativo_circulante" => $totalAtivoCirculante,
-            "passivo_circulante" => $totalPassivoCirculante,
+            "ativo_circulante" => $totalAtivosCirculantes,
+            "passivo_circulante" => $passivoAtivosCirculantes,
             "indice_liquidez_corrente" => round($indice, 2),
             "status" =>
                 $indice >= 1
@@ -200,12 +200,9 @@ class RelatorioService
             ->where("natureza", "D")
             ->sum("valor");
 
-        $totalSaidas = Partida::$totalEntradas = Partida::whereHas(
-            "conta",
-            function ($q) {
-                $q->whereIn("nome", ["Caixa", "Bancos"]);
-            },
-        )
+        $totalSaidas = Partida::whereHas("conta", function ($q) {
+            $q->whereIn("nome", ["Caixa", "Bancos"]);
+        })
             ->where("natureza", "C")
             ->sum("valor");
 

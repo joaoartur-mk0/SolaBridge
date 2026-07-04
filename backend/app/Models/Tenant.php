@@ -40,14 +40,18 @@ class Tenant extends Model
     }
     public function titulos()
     {
-        return $this->hasMany(TitulosFinanceiros::class);
+        return $this->hasMany(TituloFinanceiro::class);
     }
     public function produtos()
     {
-        return $this->hasMany(ProdutosServicos::class);
+        return $this->hasMany(Produto::class);
+    }
+    public function servicos()
+    {
+        return $this->hasMany(Servico::class);
     }
     public function estoque()
     {
-        return $this->hasMany(Estoque::class);
+        return $this->hasMany(MovimentacaoEstoque::class);
     }
 }

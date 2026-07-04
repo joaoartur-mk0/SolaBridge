@@ -24,12 +24,12 @@ class Customer extends Model
 
     public function tenant()
     {
-        return $this->belongTo(Tenant::class, "tenant_id");
+        return $this->belongsTo(Tenant::class, "tenant_id");
     }
 
     public function titulos()
     {
-        return $this->hasMany(TitulosFinanceiros::class);
+        return $this->hasMany(TituloFinanceiro::class);
     }
     public function lancamentos()
     {

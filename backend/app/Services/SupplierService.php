@@ -12,7 +12,7 @@ class SupplierService
         $dados["tenant_id"] = $tenant_id;
         return DB::transaction(function () use ($dados) {
             $supplier = Supplier::create($dados);
-            return ["customer" => $supplier];
+            return ["supplier" => $supplier];
         });
     }
 }

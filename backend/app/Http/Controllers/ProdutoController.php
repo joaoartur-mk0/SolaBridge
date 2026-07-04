@@ -28,7 +28,7 @@ class ProdutoController extends Controller
             $tenant_id,
         );
         return $this->successResponse(
-            "Cliente registrado com sucesso!",
+            "Produto registrado com sucesso!",
             $produto,
             201,
         );

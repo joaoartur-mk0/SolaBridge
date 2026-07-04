@@ -28,7 +28,7 @@ class VendaController extends Controller
             $tenant_id,
         );
 
-        return $this->succesResponse(
+        return $this->successResponse(
             "Venda processada com sucesso!",
             $resultado,
             201,

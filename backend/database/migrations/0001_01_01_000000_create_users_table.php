@@ -18,7 +18,12 @@ return new class extends Migration {
             $table->string("password");
             $table->rememberToken();
             $table->foreignId("tenant_id")->constrained("tenants");
-            $table->enum("role", ["admin", "contador", "operador"]);
+            $table->enum("role", [
+                "admin",
+                "contador",
+                "operador",
+                "superadmin",
+            ]);
             $table->timestamps();
         });
 

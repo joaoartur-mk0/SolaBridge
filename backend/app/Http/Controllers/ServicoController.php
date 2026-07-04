@@ -6,7 +6,6 @@ use App\Services\ServicoService;
 use App\Http\Requests\StoreServicoRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ServicoController extends Controller
 {
@@ -14,15 +13,17 @@ class ServicoController extends Controller
 
     protected $servicoService;
 
-    public function __construct(ServicoService $servicoService){
+    public function __construct(ServicoService $servicoService)
+    {
         $this->servicoService = $servicoService;
     }
 
-    public function store(StoreServicoRequest $request): JsonResponse {
-        $dadosLimpos= $request->validated();
-        $tenant_id = auth()->user()tenant_id;
-        $servico = $this->servicoService->resgistrarServico(
-            $dadosLimposm
+    public function store(StoreServicoRequest $request): JsonResponse
+    {
+        $dadosLimpos = $request->validated();
+        $tenant_id = auth()->user()->tenant_id;
+        $servico = $this->servicoService->registrarServico(
+            $dadosLimpos,
             $tenant_id,
         );
         return $this->successResponse(

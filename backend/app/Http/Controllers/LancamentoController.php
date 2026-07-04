@@ -2,25 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Lancamento;
-use App\Models\Partida;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreLancamentoRequest;
+use App\Services\LancamentoService;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 
 class LancamentoController extends Controller
 {
+    use ApiResponse;
+
     protected $lancamentoService;
 
-    public function __construct(LancamentoService $lancamentoService){
-        $this->lancamentoService = $lancamentoService
+    public function __construct(LancamentoService $lancamentoService)
+    {
+        $this->lancamentoService = $lancamentoService;
     }
 
-    public function store(StoreLancamentoRequest $request): JsonResponse {
+    public function store(StoreLancamentoRequest $request): JsonResponse
+    {
         $dadosLimpos = $request->validated();
-        $dadosLimpos['teant_id'] = auth()->user()->tenant_id;;
+        $tenant_id = auth()->user()->tenant_id;
 
-        $lancamento = $this->lancamentoService->registrarLancamentoContabil($dadosLimpos);
+        $lancamento = $this->lancamentoService->registrarLancamentoContabil(
+            $dadosLimpos,
+            $tenant_id,
+        );
 
-        return $this->succesResponse('Lançamento registrado com sucesso!', $lancamento, 201);
+        return $this->successResponse(
+            "Lancamento registrado com sucesso!",
+            $lancamento,
+            201,
+        );
     }
 }

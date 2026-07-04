@@ -11,11 +11,11 @@ class CustomerController extends Controller
 {
     use ApiResponse;
 
-    protected $customService;
+    protected $customerService;
 
-    public function __construct(CustomerService $customService)
+    public function __construct(CustomerService $customerService)
     {
-        $this->customerService = $customService;
+        $this->customerService = $customerService;
     }
 
     public function store(StoreCustomerRequest $request): JsonResponse

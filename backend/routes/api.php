@@ -8,6 +8,8 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\VendaController;
 use App\Http\Controllers\AuthController;
@@ -21,13 +23,15 @@ Route::prefix("v1")->group(function () {
     ## Autenticação
     Route::post("/login", [AuthController::class, "login"]);
     Route::post("/tenants", [TenantController::class, "store"]);
-    Route::post("/users", [UserController::class, "store"]);
 
     # Private
     Route::middleware("auth:sanctum")->group(function () {
         ## Cadastros
         Route::post("/customers", [CustomerController::class, "store"]);
-        Route::post("/suppliers", [SupplierController::class, "store"]); // Assumindo que clonaste o Customer para Supplier
+        Route::post("/suppliers", [SupplierController::class, "store"]);
+        Route::post("/produtos", [ProdutoController::class, "store"]);
+        Route::post("/servicos", [ServicoController::class, "store"]);
+        Route::post("/users", [UserController::class, "store"]);
 
         ## Processamentos
         Route::post("/compras", [CompraController::class, "store"]);

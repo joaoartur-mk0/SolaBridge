@@ -15,11 +15,11 @@ return new class extends Migration {
             $table->timestamps();
             $table
                 ->foreignId("lancamento_id")
-                ->constraint("lancamentos")
+                ->constrained("lancamentos")
                 ->cascadeOnDelete();
             $table
-                ->foreignId("contas_id")
-                ->constraint("contas")
+                ->foreignId("conta_id")
+                ->constrained("contas")
                 ->cascadeOnDelete();
             $table
                 ->foreignId("produto_id")

@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\TenantScope;
 
-class Estoque extends Model
+class MovimentacaoEstoque extends Model
 {
     protected $table = "movimentacoes_estoque";
     protected $fillable = [
@@ -14,6 +15,7 @@ class Estoque extends Model
         "tipo_movimento",
         "quantidade",
         "custo_unitario",
+        "observacao",
     ];
 
     protected static function booted()

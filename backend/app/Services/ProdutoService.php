@@ -7,15 +7,12 @@ use Illuminate\Support\Facades\DB;
 
 class ProdutoService
 {
-    public function registrarProduto(array $data, $tenant_id)
+    public function registrarProduto(array $dados, int $tenant_id)
     {
-        DB::transaction(function () use ($data, $tenant_id) {
-            $produto = Produto::create([
-                "tenant_id" => $tenant_id,
-                "nome" => $data["nome"],
-                "descricao" => $data["descricao"],
-                "preco" => $data["preco"],
-            ]);
+        $dados["tenant_id"] = $tenant_id;
+        return DB::transaction(function () use ($dados) {
+            $produto = Produto::create($dados);
+            return ["produto" => $produto];
         });
     }
 }

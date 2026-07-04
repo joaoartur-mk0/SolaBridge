@@ -10,15 +10,16 @@ class Partida extends Model
     public $timestamps = false;
     protected $fillable = [
         "lancamento_id",
-        "contas_id",
+        "conta_id",
         "produto_id",
+        "servico_id",
         "valor",
         "natureza",
     ];
 
     public function conta()
     {
-        return $this->belongsTo(Conta::class, "contas_id");
+        return $this->belongsTo(Conta::class, "conta_id");
     }
 
     public function lancamento()

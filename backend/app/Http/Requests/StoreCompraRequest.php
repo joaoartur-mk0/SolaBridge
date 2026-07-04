@@ -23,11 +23,11 @@ class StoreCompraRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "supllier_id" => "required|exists:suplliers,id",
+            "supplier_id" => "required|exists:suppliers,id",
             "produto_id" => "required|exists:produtos,id",
             "quantidade" => "required|numeric|min:0.001",
             "custo_unitario" => "required|numeric|min:0.01",
-            "forma_pagamento" => "required|in:A_VISTA,PRAZO ",
+            "forma_pagamento" => "required|in:A_VISTA,PRAZO",
             "data_compra" => "required|date",
         ];
     }
@@ -35,7 +35,7 @@ class StoreCompraRequest extends FormRequest
     public function messages(): array
     {
         return [
-            "supllier_id.exists" =>
+            "supplier_id.exists" =>
                 "O fornecedor selecionado não está registrado no banco dados da empresa",
             "produto_id.exists" =>
                 "O produto selecionado não está registrado no banco de dados",
@@ -45,7 +45,7 @@ class StoreCompraRequest extends FormRequest
                 "Parâmetro inválido | quantidade de produto deve ser maior que 0",
             "quantidade.numeric" =>
                 "Parâmetro inválido | quantidade informada em formato inválido",
-            "supllier_id.required" =>
+            "supplier_id.required" =>
                 "Parâmetro obrigatório nulo | informar um fornecedor é obrigatório para o registro de compra",
             "produto_id.required" =>
                 "Parâmetro obrigatório nulo | informar um produto é obrigatório para o registro de compra",

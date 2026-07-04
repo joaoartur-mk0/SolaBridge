@@ -11,17 +11,17 @@ use Exception;
 
 class CompraService
 {
-    public function processarComprar(array $dados, int $tenant_id)
+    public function processarCompra(array $dados, int $tenant_id)
     {
         return DB::transaction(function () use ($dados, $tenant_id) {
             $valorTotal = $dados["quantidade"] * $dados["custo_unitario"];
-            $produto = Produto::where('$tenant_id', $tenant_id)->findOrFail(
+            $produto = Produto::where("tenant_id", $tenant_id)->findOrFail(
                 $dados["produto_id"],
             );
 
             $movimentacao = MovimentacaoEstoque::create([
                 "tenant_id" => $tenant_id,
-                "produto_servico_id" => $produto->id,
+                "produto_id" => $produto->id,
                 "tipo_movimento" => "ENTRADA",
                 "quantidade" => $dados["quantidade"],
                 "custo_unitario" => $dados["custo_unitario"],
@@ -38,7 +38,10 @@ class CompraService
                 "supplier_id" => $dados["supplier_id"],
                 "tipo" => "PAGAR",
                 "descricao" =>
-                    "Compra de " . $dados["quantidade"] . "x " . $produto->nome,
+                    "Compra de " .
+                    $dados["quantidade"] .
+                    "x " .
+                    $produto->descricao,
                 "valor_total" => $valorTotal,
                 "data_vencimento" => $dados["data_compra"],
                 "status" => $status,
@@ -54,7 +57,7 @@ class CompraService
 
             $contaCredito = $dados["forma_pagamento"] === "A_VISTA" ? 1 : 3;
 
-            $lancamento->partidas()->crrateMany([
+            $lancamento->partidas()->createMany([
                 [
                     "conta_id" => 2,
                     "valor" => $valorTotal,

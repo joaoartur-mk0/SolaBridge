@@ -32,7 +32,7 @@ class StoreTenantRequest extends FormRequest
 
             "razao_social" => "nullable|string|max:255",
             "inscricao_estadual" =>
-                "nullable|string|unique:tenants,inscricao_estdual|max:50",
+                "nullable|string|unique:tenants,inscricao_estadual|max:50",
             "cnae" => "nullable|string|max:20",
 
             // dados para cadastrar usuario admin padrao
