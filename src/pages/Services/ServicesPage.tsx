@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { services } from "../mocks";
+import { services } from "../../mocks";
 
 export default function ServicesPage() {
 

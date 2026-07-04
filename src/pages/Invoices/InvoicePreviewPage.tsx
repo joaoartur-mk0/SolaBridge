@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/Button";
 
 import type { DanfseData } from "../../types/danfse";
 import { getDanfsePreview } from "../../services/nfsePreviewService";
+import { Link } from "react-router-dom";
 
 export function InvoicePreviewPage() {
   const [danfse, setDanfse] = useState<DanfseData | null>(null);
@@ -60,9 +61,9 @@ export function InvoicePreviewPage() {
             <div className="flex flex-wrap gap-3">
               <Badge variant="info">Ambiente de homologação</Badge>
 
-              <Button variant="secondary">
-                Voltar para edição
-              </Button>
+              <Link to="/invoices/new">
+                <Button variant="secondary">Voltar para edição</Button>
+              </Link>
 
               <Button variant="secondary" onClick={handleDownloadPdf}>
                 {isGeneratingPdf ? "Gerando PDF..." : "Baixar PDF"}

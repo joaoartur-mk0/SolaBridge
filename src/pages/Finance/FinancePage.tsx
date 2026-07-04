@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-import { finances } from "../mocks";
+import { finances } from "../../mocks";
 
-import { PageHeader } from "../components/shared/PageHeader";
+import { PageHeader } from "../../components/shared/PageHeader";
 
-import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button";
+import { Input } from "../../components/ui/Input";
+import { Button } from "../../components/ui/Button";
 
 import {
     Table,
@@ -14,7 +14,7 @@ import {
     TableRow,
     TableHead,
     TableCell,
-} from "../components/ui/Table";
+} from "../../components/ui/Table";
 
 export default function FinancePage() {
 

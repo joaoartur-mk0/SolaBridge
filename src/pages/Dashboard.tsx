@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/Table";
+import { Link } from "react-router-dom";
 
 type StatusBadgeStatus = ComponentProps<typeof StatusBadge>["status"];
 
@@ -81,7 +82,11 @@ export function Dashboard() {
       <PageHeader
         title="Dashboard"
         description="Visão geral financeira, contábil e fiscal da empresa."
-        action={<Button>Emitir NFS-e</Button>}
+        action={
+          <Link to="/invoices/new">
+            <Button>Emitir NFS-e</Button>
+          </Link>
+        }
       />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

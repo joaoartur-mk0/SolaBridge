@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { customers } from "../mocks";
+import { customers } from "../../mocks";
 
 export default function CustomersPage() {
     const [search, setSearch] = useState("");

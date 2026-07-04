@@ -1,47 +1,39 @@
-import { useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AppLayout } from "./components/layout/AppLayout";
-import { Button } from "./components/ui/Button";
 
 import { Dashboard } from "./pages/Dashboard";
+import CustomersPage from "./pages/Customers/CustomersPage";
+import ServicesPage from "./pages/Services/ServicesPage";
 import { CreateInvoicePage } from "./pages/Invoices/CreateInvoicePage";
 import { InvoicePreviewPage } from "./pages/Invoices/InvoicePreviewPage";
 
-type CurrentPage = "dashboard" | "create-invoice" | "preview-invoice";
-
 function App() {
-  const [currentPage, setCurrentPage] = useState<CurrentPage>("dashboard");
-
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <div className="flex flex-wrap gap-3 border-b border-slate-800 pb-4">
-          <Button
-            variant={currentPage === "dashboard" ? "primary" : "secondary"}
-            onClick={() => setCurrentPage("dashboard")}
-          >
-            Dashboard
-          </Button>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
 
-          <Button
-            variant={currentPage === "create-invoice" ? "primary" : "secondary"}
-            onClick={() => setCurrentPage("create-invoice")}
-          >
-            Emitir NFS-e
-          </Button>
+        <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/services" element={<ServicesPage />} />
 
-          <Button
-            variant={currentPage === "preview-invoice" ? "primary" : "secondary"}
-            onClick={() => setCurrentPage("preview-invoice")}
-          >
-            Pré-visualização
-          </Button>
-        </div>
+        <Route path="/invoices/new" element={<CreateInvoicePage />} />
+        <Route path="/invoices/preview" element={<InvoicePreviewPage />} />
 
-        {currentPage === "dashboard" && <Dashboard />}
-        {currentPage === "create-invoice" && <CreateInvoicePage />}
-        {currentPage === "preview-invoice" && <InvoicePreviewPage />}
-      </div>
+        <Route
+          path="/invoices"
+        />
+
+        <Route
+          path="/finance"
+        />
+
+        <Route
+          path="/settings"
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </AppLayout>
   );
 }
