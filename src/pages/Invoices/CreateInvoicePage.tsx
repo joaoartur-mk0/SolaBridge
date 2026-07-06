@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { PageHeader } from "../../components/shared/PageHeader";
 import { SectionHeader } from "../../components/shared/SectionHeader";
@@ -53,6 +54,8 @@ function formatCurrency(value: number) {
 }
 
 export function CreateInvoicePage() {
+  const navigate = useNavigate();
+
   const [customerId, setCustomerId] = useState(customers[0].id);
   const [serviceId, setServiceId] = useState(services[0].id);
   const [amount, setAmount] = useState(String(services[0].defaultValue));
@@ -186,7 +189,7 @@ export function CreateInvoicePage() {
                 Salvar rascunho
               </Button>
 
-              <Button>
+              <Button onClick={() => navigate("/invoices/preview")}>
                 Emitir NFS-e
               </Button>
             </div>

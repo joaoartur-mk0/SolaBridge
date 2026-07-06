@@ -22,6 +22,7 @@ const navigationItems = [
   {
     label: "Notas fiscais",
     href: "/invoices",
+    end: true,
   },
   {
     label: "Financeiro",
@@ -55,7 +56,7 @@ export function Sidebar() {
           <NavLink
             key={item.href}
             to={item.href}
-            end={item.href === "/"}
+            end={item.end ?? item.href === "/"}
             className={({ isActive }) =>
               cn(
                 "flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition",
