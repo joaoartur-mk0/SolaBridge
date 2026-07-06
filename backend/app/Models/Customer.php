@@ -15,7 +15,20 @@ class Customer extends Model
         "nome",
         "email",
         "telefone",
+        "inscricao_estadual",
+        "inscricao_municipal",
+        "nif",
+        "codigo_pais",
+        "codigo_ibge",
+        "active",
     ];
+
+    protected function casts(): array
+    {
+        return [
+            "active" => "boolean",
+        ];
+    }
 
     protected static function booted()
     {

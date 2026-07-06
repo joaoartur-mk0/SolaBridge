@@ -15,7 +15,15 @@ class Supplier extends Model
         "nome",
         "email",
         "telefone",
+        "active",
     ];
+
+    protected function casts(): array
+    {
+        return [
+            "active" => "boolean",
+        ];
+    }
 
     protected static function booted()
     {

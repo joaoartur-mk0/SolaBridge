@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string("nome");
             $table->string("email")->nullable();
             $table->string("telefone")->nullable();
+            $table->boolean("active")->default(true);
             $table->unique(["tenant_id", "documento"]);
             $table->timestamps();
         });

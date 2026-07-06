@@ -5,9 +5,45 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
+    #[
+        OA\Post(
+            path: "/login",
+            summary: "Autentica um usuário e retorna o token Sanctum",
+            tags: ["Autenticação"],
+            requestBody: new OA\RequestBody(
+                required: true,
+                content: new OA\JsonContent(
+                    required: ["email", "password"],
+                    properties: [
+                        new OA\Property(
+                            property: "email",
+                            type: "string",
+                            example: "joao@techsolutions.com",
+                        ),
+                        new OA\Property(
+                            property: "password",
+                            type: "string",
+                            example: "SenhaForte123!",
+                        ),
+                    ],
+                ),
+            ),
+            responses: [
+                new OA\Response(
+                    response: 200,
+                    description: "Login efetuado com sucesso.",
+                ),
+                new OA\Response(
+                    response: 401,
+                    description: "Credenciais inválidas.",
+                ),
+            ],
+        ),
+    ]
     public function login(Request $request)
     {
         $request->validate([

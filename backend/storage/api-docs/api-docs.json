@@ -1,0 +1,1235 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SolaBridge API",
+        "description": "Documentação oficial da API do SolaBridge ERP (Motor Contábil).",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api/v1",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Autentica um usuário e retorna o token Sanctum",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "joao@techsolutions.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "SenhaForte123!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login efetuado com sucesso."
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas."
+                    }
+                }
+            }
+        },
+        "/compras": {
+            "get": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Lista (paginada) as compras do tenant (títulos a pagar)",
+                "operationId": "95385498bacd9113ea8b47fdd62f1903",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "PENDENTE",
+                                "PAGO",
+                                "ATRASADO",
+                                "CANCELADO"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de compras."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Registra uma compra (atualiza estoque, financeiro e contabilidade)",
+                "operationId": "ff378324319eb1b1ed647d91e412d347",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "supplier_id",
+                                    "produto_id",
+                                    "quantidade",
+                                    "custo_unitario",
+                                    "forma_pagamento",
+                                    "data_compra"
+                                ],
+                                "properties": {
+                                    "supplier_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "produto_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "quantidade": {
+                                        "type": "number",
+                                        "example": 10
+                                    },
+                                    "custo_unitario": {
+                                        "type": "number",
+                                        "example": 5.5
+                                    },
+                                    "forma_pagamento": {
+                                        "type": "string",
+                                        "example": "PRAZO"
+                                    },
+                                    "data_compra": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-07-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Compra criada."
+                    },
+                    "422": {
+                        "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/compras/{id}": {
+            "get": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Detalha uma compra (título, lançamentos, partidas e movimentações)",
+                "operationId": "3b87fd124f7f41591e1a662943ed1864",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Compra."
+                    },
+                    "404": {
+                        "description": "Compra não encontrada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Apaga definitivamente uma compra e seus lançamentos/movimentações",
+                "operationId": "b92af5dbe0b407de33d11801bd3aad6e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Compra apagada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/compras/{id}/cancelar": {
+            "post": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Cancela uma compra gerando estorno contábil e de estoque (mantém histórico)",
+                "operationId": "162215086679215d096667db36df660f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Compra cancelada/estornada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/customers": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Lista (paginada) os clientes do tenant, com busca e filtro de status",
+                "operationId": "30ce4124bc07a0d013b69974ff225a5c",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Busca por nome ou documento",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de clientes."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Cadastra um novo cliente (tomador) para o tenant",
+                "operationId": "8350a1a36d2b5522ea4158253eff28a1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo_pessoa",
+                                    "documento",
+                                    "nome"
+                                ],
+                                "properties": {
+                                    "tipo_pessoa": {
+                                        "type": "string",
+                                        "example": "PJ"
+                                    },
+                                    "documento": {
+                                        "type": "string",
+                                        "example": "12345678000199"
+                                    },
+                                    "nome": {
+                                        "type": "string",
+                                        "example": "Cliente Exemplo LTDA"
+                                    },
+                                    "codigo_ibge": {
+                                        "type": "string",
+                                        "example": "3550308"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cliente criado."
+                    },
+                    "422": {
+                        "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/customers/{id}/status": {
+            "patch": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Ativa ou inativa um cliente (não é removido por vínculo financeiro)",
+                "operationId": "51c0cd7ce2b61fbb232a05692c611357",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "active"
+                                ],
+                                "properties": {
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status atualizado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/lancamentos": {
+            "post": {
+                "tags": [
+                    "Lançamentos"
+                ],
+                "summary": "Registra um lançamento contábil manual (partidas dobradas)",
+                "operationId": "c9ed0dc10ad1834ad781e8265adef7a7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "description",
+                                    "date",
+                                    "partidas"
+                                ],
+                                "properties": {
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Integralização de capital"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-07-01"
+                                    },
+                                    "partidas": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "conta_id",
+                                                "valor",
+                                                "natureza"
+                                            ],
+                                            "properties": {
+                                                "conta_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "valor": {
+                                                    "type": "number",
+                                                    "example": 1000
+                                                },
+                                                "natureza": {
+                                                    "type": "string",
+                                                    "example": "D"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Lançamento criado."
+                    },
+                    "422": {
+                        "description": "Débitos e créditos não batem / erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/produtos": {
+            "post": {
+                "tags": [
+                    "Produtos"
+                ],
+                "summary": "Cadastra um produto para o tenant",
+                "operationId": "4ef2f8bfa3024fa10e6e5e26f25a7dd0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "descricao",
+                                    "preco_venda",
+                                    "custo_medio",
+                                    "unidade"
+                                ],
+                                "properties": {
+                                    "descricao": {
+                                        "type": "string",
+                                        "example": "Camiseta Branca P"
+                                    },
+                                    "preco_venda": {
+                                        "type": "number",
+                                        "example": 49.9
+                                    },
+                                    "custo_medio": {
+                                        "type": "number",
+                                        "example": 20
+                                    },
+                                    "unidade": {
+                                        "type": "string",
+                                        "example": "UN"
+                                    },
+                                    "codigo_sku": {
+                                        "type": "string",
+                                        "example": "CAM-BR-P"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Produto criado."
+                    },
+                    "422": {
+                        "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/relatorios/dre": {
+            "get": {
+                "tags": [
+                    "Relatórios"
+                ],
+                "summary": "Demonstração de Resultado do Exercício (DRE)",
+                "operationId": "eb029d5dd7390289cb7ffeb6cb2afc6c",
+                "parameters": [
+                    {
+                        "name": "inicio",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fim",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "DRE do tenant."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/relatorios/balanco": {
+            "get": {
+                "tags": [
+                    "Relatórios"
+                ],
+                "summary": "Balanço Patrimonial (Ativo, Passivo e PL)",
+                "operationId": "05438b50302fc90dedeab37661d3ddb2",
+                "responses": {
+                    "200": {
+                        "description": "Balanço patrimonial do tenant."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/relatorios/razao/{contaId}": {
+            "get": {
+                "tags": [
+                    "Relatórios"
+                ],
+                "summary": "Extrato do razão (Livro Razão) de uma conta contábil",
+                "operationId": "5d4704815884fe63350c1c4955af55ac",
+                "parameters": [
+                    {
+                        "name": "contaId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "inicio",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fim",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movimentações e saldo acumulado da conta."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/relatorios/liquidez": {
+            "get": {
+                "tags": [
+                    "Relatórios"
+                ],
+                "summary": "Índice de Liquidez Corrente",
+                "operationId": "accabd687a15600eb96a338774aab0c9",
+                "responses": {
+                    "200": {
+                        "description": "Índice de liquidez corrente do tenant."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/relatorios/caixa-bancos": {
+            "get": {
+                "tags": [
+                    "Relatórios"
+                ],
+                "summary": "Saldo consolidado de Caixa e Bancos",
+                "operationId": "34c58c1a9eb6e7dcd2db9a0d5c60f3c4",
+                "responses": {
+                    "200": {
+                        "description": "Saldo consolidado de Caixa e Bancos."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/servicos": {
+            "post": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Cadastra um serviço para o tenant",
+                "operationId": "310641dcdd4b36dce76883fe6ec1b8a5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nome",
+                                    "descricao",
+                                    "valor_servico",
+                                    "codigo",
+                                    "codigo_tributacao_nacional",
+                                    "codigo_ibge_municipio"
+                                ],
+                                "properties": {
+                                    "nome": {
+                                        "type": "string",
+                                        "example": "Consultoria Contábil"
+                                    },
+                                    "descricao": {
+                                        "type": "string",
+                                        "example": "Consultoria contábil mensal"
+                                    },
+                                    "valor_servico": {
+                                        "type": "number",
+                                        "example": 500
+                                    },
+                                    "codigo": {
+                                        "type": "string",
+                                        "example": "SRV-001"
+                                    },
+                                    "codigo_tributacao_nacional": {
+                                        "type": "string",
+                                        "example": "010701"
+                                    },
+                                    "codigo_ibge_municipio": {
+                                        "type": "string",
+                                        "example": "3550308"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Serviço criado."
+                    },
+                    "422": {
+                        "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/suppliers": {
+            "get": {
+                "tags": [
+                    "Suppliers"
+                ],
+                "summary": "Lista (paginada) os fornecedores do tenant, com busca e filtro de status",
+                "operationId": "a043e760500e8b8058d41738e74046f7",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Busca por nome ou documento",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de fornecedores."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Suppliers"
+                ],
+                "summary": "Cadastra um novo fornecedor para o tenant",
+                "operationId": "3e424442ff493b5f7620e1ae344a23dc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo_pessoa",
+                                    "documento",
+                                    "nome"
+                                ],
+                                "properties": {
+                                    "tipo_pessoa": {
+                                        "type": "string",
+                                        "example": "PJ"
+                                    },
+                                    "documento": {
+                                        "type": "string",
+                                        "example": "98765432000155"
+                                    },
+                                    "nome": {
+                                        "type": "string",
+                                        "example": "Fornecedor Exemplo LTDA"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Fornecedor criado."
+                    },
+                    "422": {
+                        "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/suppliers/{id}/status": {
+            "patch": {
+                "tags": [
+                    "Suppliers"
+                ],
+                "summary": "Ativa ou inativa um fornecedor (não é removido por vínculo financeiro)",
+                "operationId": "34df55440f91aee380cbf7abe17a3ce5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "active"
+                                ],
+                                "properties": {
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status atualizado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tenants": {
+            "post": {
+                "tags": [
+                    "Onboarding"
+                ],
+                "summary": "Registra uma nova Empresa (Tenant) e seu Administrador",
+                "operationId": "90f344d08205040e44ad7f0d2fa3ac6e",
+                "requestBody": {
+                    "description": "Payload (JSON) com os dados da empresa e do usuário dono.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo_pessoa",
+                                    "documento",
+                                    "nome",
+                                    "admin_name",
+                                    "admin_email",
+                                    "admin_password"
+                                ],
+                                "properties": {
+                                    "tipo_pessoa": {
+                                        "description": "PF ou PJ",
+                                        "type": "string",
+                                        "example": "PJ"
+                                    },
+                                    "documento": {
+                                        "type": "string",
+                                        "example": "12345678000199"
+                                    },
+                                    "nome": {
+                                        "type": "string",
+                                        "example": "Tech Solutions LTDA"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "contato@techsolutions.com"
+                                    },
+                                    "admin_name": {
+                                        "type": "string",
+                                        "example": "João Silva"
+                                    },
+                                    "admin_email": {
+                                        "type": "string",
+                                        "example": "joao@techsolutions.com"
+                                    },
+                                    "admin_password": {
+                                        "type": "string",
+                                        "example": "SenhaForte123!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tenant e Usuário criados com sucesso."
+                    },
+                    "422": {
+                        "description": "Erro de validação (Ex: Documento ou E-mail já existem)."
+                    }
+                }
+            }
+        },
+        "/users": {
+            "post": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Cadastra um usuário no tenant autenticado",
+                "operationId": "a1fce870c566eb5fc0cf3178ec5d2fed",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Maria Contadora"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "maria@empresa.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "SenhaForte123!"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "contador"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário criado."
+                    },
+                    "422": {
+                        "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/vendas": {
+            "get": {
+                "tags": [
+                    "Vendas"
+                ],
+                "summary": "Lista (paginada) as vendas do tenant (títulos a receber)",
+                "operationId": "43b73583a2724430927940475c7399ab",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "PENDENTE",
+                                "PAGO",
+                                "ATRASADO",
+                                "CANCELADO"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de vendas."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Vendas"
+                ],
+                "summary": "Registra uma venda (baixa estoque, gera financeiro e contabilidade)",
+                "operationId": "dc32de2fe901d423c462387788a3a76b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "produto_id",
+                                    "customer_id",
+                                    "quantidade",
+                                    "valor_total",
+                                    "forma_pagamento",
+                                    "data_venda"
+                                ],
+                                "properties": {
+                                    "produto_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "customer_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "quantidade": {
+                                        "type": "number",
+                                        "example": 3
+                                    },
+                                    "valor_total": {
+                                        "type": "number",
+                                        "example": 150
+                                    },
+                                    "forma_pagamento": {
+                                        "type": "string",
+                                        "example": "A_VISTA"
+                                    },
+                                    "data_venda": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-07-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Venda criada."
+                    },
+                    "422": {
+                        "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/vendas/{id}": {
+            "get": {
+                "tags": [
+                    "Vendas"
+                ],
+                "summary": "Detalha uma venda (título, lançamentos, partidas e movimentações)",
+                "operationId": "975374036becf727340c9d8430129b92",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Venda."
+                    },
+                    "404": {
+                        "description": "Venda não encontrada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Vendas"
+                ],
+                "summary": "Apaga definitivamente uma venda e seus lançamentos/movimentações",
+                "operationId": "b1f4b8228bd3c4e98ce2d855058c1710",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Venda apagada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/vendas/{id}/cancelar": {
+            "post": {
+                "tags": [
+                    "Vendas"
+                ],
+                "summary": "Cancela uma venda gerando estorno contábil e de estoque (mantém histórico)",
+                "operationId": "3b945ba989d5e90c8fc2cb8301f81b03",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Venda cancelada/estornada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Token pessoal (Sanctum) retornado pelo endpoint /login.",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Autenticação",
+            "description": "Autenticação"
+        },
+        {
+            "name": "Compras",
+            "description": "Compras"
+        },
+        {
+            "name": "Customers",
+            "description": "Customers"
+        },
+        {
+            "name": "Lançamentos",
+            "description": "Lançamentos"
+        },
+        {
+            "name": "Produtos",
+            "description": "Produtos"
+        },
+        {
+            "name": "Relatórios",
+            "description": "Relatórios"
+        },
+        {
+            "name": "Serviços",
+            "description": "Serviços"
+        },
+        {
+            "name": "Suppliers",
+            "description": "Suppliers"
+        },
+        {
+            "name": "Onboarding",
+            "description": "Onboarding"
+        },
+        {
+            "name": "Usuários",
+            "description": "Usuários"
+        },
+        {
+            "name": "Vendas",
+            "description": "Vendas"
+        }
+    ]
+}

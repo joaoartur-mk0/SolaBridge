@@ -90,7 +90,8 @@ class RelatorioService
             "ativo" => $totalAtivo,
             "passivo" => $totalPassivo,
             "patrimonio_liquido" => $totalPL,
-            "equacao_valida" => $totalAtivo === $totalPassivo + $totalPL,
+            "equacao_valida" =>
+                abs($totalAtivo - ($totalPassivo + $totalPL)) < 0.01,
         ];
     }
 
@@ -102,7 +103,7 @@ class RelatorioService
         $conta = Conta::findOrFail($contaId);
         $naturezaConta = strtoupper($conta->natureza);
 
-        $query = Partida::with("lancamento")->where("contas_id", $contaId);
+        $query = Partida::with("lancamento")->where("conta_id", $contaId);
 
         if ($dataInicio && $dataFim) {
             $query->whereHas("lancamento", function ($q) use (

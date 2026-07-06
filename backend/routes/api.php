@@ -27,15 +27,43 @@ Route::prefix("v1")->group(function () {
     # Private
     Route::middleware("auth:sanctum")->group(function () {
         ## Cadastros
+        Route::get("/customers", [CustomerController::class, "index"]);
         Route::post("/customers", [CustomerController::class, "store"]);
+        Route::patch("/customers/{id}/status", [
+            CustomerController::class,
+            "updateStatus",
+        ]);
+
+        Route::get("/suppliers", [SupplierController::class, "index"]);
         Route::post("/suppliers", [SupplierController::class, "store"]);
+        Route::patch("/suppliers/{id}/status", [
+            SupplierController::class,
+            "updateStatus",
+        ]);
+
         Route::post("/produtos", [ProdutoController::class, "store"]);
         Route::post("/servicos", [ServicoController::class, "store"]);
         Route::post("/users", [UserController::class, "store"]);
 
         ## Processamentos
+        Route::get("/compras", [CompraController::class, "index"]);
+        Route::get("/compras/{id}", [CompraController::class, "show"]);
         Route::post("/compras", [CompraController::class, "store"]);
+        Route::post("/compras/{id}/cancelar", [
+            CompraController::class,
+            "cancel",
+        ]);
+        Route::delete("/compras/{id}", [CompraController::class, "destroy"]);
+
+        Route::get("/vendas", [VendaController::class, "index"]);
+        Route::get("/vendas/{id}", [VendaController::class, "show"]);
         Route::post("/vendas", [VendaController::class, "store"]);
+        Route::post("/vendas/{id}/cancelar", [
+            VendaController::class,
+            "cancel",
+        ]);
+        Route::delete("/vendas/{id}", [VendaController::class, "destroy"]);
+
         Route::post("/lancamentos", [LancamentoController::class, "store"]);
 
         ## Relatórios

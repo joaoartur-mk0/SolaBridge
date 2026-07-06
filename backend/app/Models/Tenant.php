@@ -15,7 +15,9 @@ class Tenant extends Model
         "cep",
         "razao_social",
         "inscricao_estadual",
+        "inscricao_municipal",
         "cnae",
+        "regime_tributacao",
     ];
 
     public function users()

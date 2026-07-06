@@ -11,6 +11,13 @@ use Exception;
 
 class CompraService
 {
+    protected $planoDeContasService;
+
+    public function __construct(PlanoDeContasService $planoDeContasService)
+    {
+        $this->planoDeContasService = $planoDeContasService;
+    }
+
     public function processarCompra(array $dados, int $tenant_id)
     {
         return DB::transaction(function () use ($dados, $tenant_id) {
@@ -55,15 +62,32 @@ class CompraService
                 "date" => $dados["data_compra"],
             ]);
 
-            $contaCredito = $dados["forma_pagamento"] === "A_VISTA" ? 1 : 3;
+            $movimentacao->update(["lancamento_id" => $lancamento->id]);
+
+            $contaEstoque = $this->planoDeContasService->resolverId(
+                PlanoDeContasService::ESTOQUE,
+                $tenant_id,
+            );
+            $contaCredito =
+                $dados["forma_pagamento"] === "A_VISTA"
+                    ? $this->planoDeContasService->resolverId(
+                        PlanoDeContasService::CAIXA,
+                        $tenant_id,
+                    )
+                    : $this->planoDeContasService->resolverId(
+                        PlanoDeContasService::FORNECEDORES,
+                        $tenant_id,
+                    );
 
             $lancamento->partidas()->createMany([
                 [
-                    "conta_id" => 2,
+                    "tenant_id" => $tenant_id,
+                    "conta_id" => $contaEstoque,
                     "valor" => $valorTotal,
                     "natureza" => "D",
                 ],
                 [
+                    "tenant_id" => $tenant_id,
                     "conta_id" => $contaCredito,
                     "valor" => $valorTotal,
                     "natureza" => "C",
@@ -75,6 +99,100 @@ class CompraService
                 "movimentacao" => $movimentacao,
                 "lancamento" => $lancamento,
             ];
+        });
+    }
+
+    public function listarCompras(?string $status = null)
+    {
+        $query = TituloFinanceiro::where("tipo", "PAGAR")->with("supplier");
+        if ($status) {
+            $query->where("status", strtoupper($status));
+        }
+        return $query->orderByDesc("data_vencimento")->paginate(15);
+    }
+
+    public function buscarCompra(int $id)
+    {
+        return TituloFinanceiro::where("tipo", "PAGAR")
+            ->with([
+                "supplier",
+                "lancamentos.partidas.conta",
+                "lancamentos.movimentacoes",
+            ])
+            ->findOrFail($id);
+    }
+
+    public function cancelarCompra(int $id, int $tenant_id)
+    {
+        return DB::transaction(function () use ($id, $tenant_id) {
+            $titulo = TituloFinanceiro::where("tipo", "PAGAR")
+                ->with(["lancamentos.partidas", "lancamentos.movimentacoes"])
+                ->findOrFail($id);
+
+            if ($titulo->status === "CANCELADO") {
+                throw new Exception("Esta compra já está cancelada.");
+            }
+
+            foreach ($titulo->lancamentos as $lancamento) {
+                $estorno = Lancamento::create([
+                    "tenant_id" => $tenant_id,
+                    "supplier_id" => $lancamento->supplier_id,
+                    "titulo_id" => $titulo->id,
+                    "description" => "Estorno - " . $lancamento->description,
+                    "date" => now()->toDateString(),
+                ]);
+
+                foreach ($lancamento->partidas as $partida) {
+                    $estorno->partidas()->create([
+                        "tenant_id" => $tenant_id,
+                        "conta_id" => $partida->conta_id,
+                        "produto_id" => $partida->produto_id,
+                        "servico_id" => $partida->servico_id,
+                        "valor" => $partida->valor,
+                        "natureza" => $partida->natureza === "D" ? "C" : "D",
+                    ]);
+                }
+
+                foreach ($lancamento->movimentacoes as $mov) {
+                    MovimentacaoEstoque::create([
+                        "tenant_id" => $tenant_id,
+                        "produto_id" => $mov->produto_id,
+                        "lancamento_id" => $estorno->id,
+                        "tipo_movimento" =>
+                            $mov->tipo_movimento === "ENTRADA"
+                                ? "SAIDA"
+                                : "ENTRADA",
+                        "quantidade" => $mov->quantidade,
+                        "custo_unitario" => $mov->custo_unitario,
+                        "observacao" => "Estorno de cancelamento",
+                    ]);
+                }
+            }
+
+            $titulo->update(["status" => "CANCELADO"]);
+
+            return $titulo->fresh(["lancamentos.partidas"]);
+        });
+    }
+
+    public function apagarCompra(int $id)
+    {
+        return DB::transaction(function () use ($id) {
+            $titulo = TituloFinanceiro::where("tipo", "PAGAR")
+                ->with("lancamentos")
+                ->findOrFail($id);
+
+            foreach ($titulo->lancamentos as $lancamento) {
+                MovimentacaoEstoque::where(
+                    "lancamento_id",
+                    $lancamento->id,
+                )->delete();
+                $lancamento->delete();
+            }
+
+            $titulo->delete();
+
+            return true;
         });
     }
 }

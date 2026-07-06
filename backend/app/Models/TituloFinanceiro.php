@@ -7,6 +7,7 @@ use App\Models\Scopes\TenantScope;
 
 class TituloFinanceiro extends Model
 {
+    protected $table = "titulos_financeiros";
     protected $fillable = [
         "tenant_id",
         "customer_id",
@@ -30,5 +31,9 @@ class TituloFinanceiro extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+    public function lancamentos()
+    {
+        return $this->hasMany(Lancamento::class, "titulo_id");
     }
 }

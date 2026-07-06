@@ -33,4 +33,12 @@ class Lancamento extends Model
     {
         return $this->belongsTo(Supplier::class, "supplier_id");
     }
+    public function titulo()
+    {
+        return $this->belongsTo(TituloFinanceiro::class, "titulo_id");
+    }
+    public function movimentacoes()
+    {
+        return $this->hasMany(MovimentacaoEstoque::class, "lancamento_id");
+    }
 }

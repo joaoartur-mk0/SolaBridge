@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\TenantScope;
 
 class Partida extends Model
 {
     protected $table = "partition";
     public $timestamps = false;
     protected $fillable = [
+        "tenant_id",
         "lancamento_id",
         "conta_id",
         "produto_id",
@@ -16,6 +18,16 @@ class Partida extends Model
         "valor",
         "natureza",
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new TenantScope());
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, "tenant_id");
+    }
 
     public function conta()
     {

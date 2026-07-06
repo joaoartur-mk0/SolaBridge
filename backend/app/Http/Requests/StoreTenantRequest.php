@@ -33,7 +33,10 @@ class StoreTenantRequest extends FormRequest
             "razao_social" => "nullable|string|max:255",
             "inscricao_estadual" =>
                 "nullable|string|unique:tenants,inscricao_estadual|max:50",
+            "inscricao_municipal" => "nullable|string|max:50",
             "cnae" => "nullable|string|max:20",
+            "regime_tributacao" =>
+                "required|in:MEI,ME,SIMPLES_NACIONAL,LUCRO_PRESUMIDO,LUCRO_REAL",
 
             // dados para cadastrar usuario admin padrao
             "admin_name" => "required|string|max:255",
@@ -52,6 +55,10 @@ class StoreTenantRequest extends FormRequest
                 "Parâmetro desconhecido | parâmetro deve ser PF ou PJ",
             "documento.max" =>
                 "Parâmtro invalido | documento está em formato não reconhecido",
+            "regime_tributacao.required" =>
+                "Parâmetro obrigatório nulo | o regime de tributação é obrigatório para o cadastro do prestador",
+            "regime_tributacao.in" =>
+                "Parâmetro desconhecido | regime de tributação deve ser MEI, ME, SIMPLES_NACIONAL, LUCRO_PRESUMIDO ou LUCRO_REAL",
         ];
     }
 }

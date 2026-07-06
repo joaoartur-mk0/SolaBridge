@@ -21,6 +21,7 @@ class LancamentoService
 
             foreach ($dados["partidas"] as $partida) {
                 $lancamento->partidas()->create([
+                    "tenant_id" => $tenant_id,
                     "conta_id" => $partida["conta_id"],
                     "valor" => $partida["valor"],
                     "natureza" => strtoupper($partida["natureza"]),

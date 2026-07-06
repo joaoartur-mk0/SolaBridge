@@ -17,6 +17,14 @@ use OpenApi\Attributes as OA;
         description: "Local Development Server",
     ),
 ]
+#[
+    OA\SecurityScheme(
+        securityScheme: "bearerAuth",
+        type: "http",
+        scheme: "bearer",
+        description: "Token pessoal (Sanctum) retornado pelo endpoint /login.",
+    ),
+]
 abstract class Controller
 {
     //

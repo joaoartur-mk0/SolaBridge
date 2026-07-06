@@ -28,6 +28,15 @@ class StoreCustomerRequest extends FormRequest
             "nome" => "required|string|max:255",
             "email" => "nullable|email|max:255",
             "telefone" => "nullable|string|max:20",
+
+            "inscricao_estadual" => "nullable|string|max:20",
+            "inscricao_municipal" => "nullable|string|max:20",
+
+            "nif" => "nullable|string|max:40|required_with:codigo_pais",
+            "codigo_pais" => "nullable|string|max:4",
+
+            "codigo_ibge" =>
+                "nullable|string|size:7|required_without:codigo_pais",
         ];
     }
 
@@ -52,6 +61,12 @@ class StoreCustomerRequest extends FormRequest
                 "Parâmetro inválido | formato de email está incorreto",
             "telefone.max" =>
                 "Parâmetro inválido | o telefone deve conter no máximo 20 caractéres",
+            "codigo_ibge.size" =>
+                "Parâmetro inválido | o código IBGE do município deve conter 7 dígitos",
+            "codigo_ibge.required_without" =>
+                "Parâmetro obrigatório nulo | o código IBGE do município é obrigatório para clientes nacionais",
+            "nif.required_with" =>
+                "Parâmetro obrigatório nulo | o NIF é obrigatório para clientes estrangeiros",
         ];
     }
 }

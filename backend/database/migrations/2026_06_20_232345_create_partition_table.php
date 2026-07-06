@@ -14,6 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table
+                ->foreignId("tenant_id")
+                ->constrained("tenants")
+                ->cascadeOnDelete();
+            $table
                 ->foreignId("lancamento_id")
                 ->constrained("lancamentos")
                 ->cascadeOnDelete();

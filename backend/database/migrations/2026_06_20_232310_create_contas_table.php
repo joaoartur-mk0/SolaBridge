@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create("contas", function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string("codigo")->unique();
+            $table->string("codigo");
             $table
                 ->foreignId("tenant_id")
                 ->constrained("tenants")
@@ -27,6 +27,7 @@ return new class extends Migration {
                 "DESPESA",
             ]);
             $table->char("natureza", 1);
+            $table->unique(["tenant_id", "codigo"]);
         });
     }
 

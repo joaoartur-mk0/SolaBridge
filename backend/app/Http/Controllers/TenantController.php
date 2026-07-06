@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTenantRequest;
 use App\Services\TenantService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 class TenantController extends Controller
 {

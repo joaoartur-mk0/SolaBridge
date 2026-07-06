@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Hash;
 
 class TenantService
 {
+    protected $planoDeContasService;
+
+    public function __construct(PlanoDeContasService $planoDeContasService)
+    {
+        $this->planoDeContasService = $planoDeContasService;
+    }
+
     public function criarNovoTenant(array $dados)
     {
         return DB::transaction(function () use ($dados) {
@@ -21,7 +28,9 @@ class TenantService
                 "cep" => $dados["cep"] ?? null,
                 "razao_social" => $dados["razao_social"] ?? null,
                 "inscricao_estadual" => $dados["inscricao_estadual"] ?? null,
+                "inscricao_municipal" => $dados["inscricao_municipal"] ?? null,
                 "cnae" => $dados["cnae"] ?? null,
+                "regime_tributacao" => $dados["regime_tributacao"],
             ]);
 
             $admin = User::create([
@@ -31,6 +40,8 @@ class TenantService
                 "password" => Hash::make($dados["admin_password"]),
                 "role" => "admin",
             ]);
+
+            $this->planoDeContasService->criarPlanoPadrao($tenant->id);
 
             return [
                 "empresa" => $tenant,

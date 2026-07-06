@@ -15,4 +15,36 @@ class SupplierService
             return ["supplier" => $supplier];
         });
     }
+
+    public function listarSuppliers(
+        ?string $search = null,
+        ?string $status = null,
+    ) {
+        $query = Supplier::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where("nome", "ilike", "%" . $search . "%")->orWhere(
+                    "documento",
+                    "ilike",
+                    "%" . $search . "%",
+                );
+            });
+        }
+
+        if ($status === "active") {
+            $query->where("active", true);
+        } elseif ($status === "inactive") {
+            $query->where("active", false);
+        }
+
+        return $query->orderBy("nome")->paginate(15);
+    }
+
+    public function alterarStatus(int $id, bool $active)
+    {
+        $supplier = Supplier::findOrFail($id);
+        $supplier->update(["active" => $active]);
+        return $supplier;
+    }
 }

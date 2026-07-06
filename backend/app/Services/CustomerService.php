@@ -15,4 +15,36 @@ class CustomerService
             return ["customer" => $customer];
         });
     }
+
+    public function listarCustomers(
+        ?string $search = null,
+        ?string $status = null,
+    ) {
+        $query = Customer::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where("nome", "ilike", "%" . $search . "%")->orWhere(
+                    "documento",
+                    "ilike",
+                    "%" . $search . "%",
+                );
+            });
+        }
+
+        if ($status === "active") {
+            $query->where("active", true);
+        } elseif ($status === "inactive") {
+            $query->where("active", false);
+        }
+
+        return $query->orderBy("nome")->paginate(15);
+    }
+
+    public function alterarStatus(int $id, bool $active)
+    {
+        $customer = Customer::findOrFail($id);
+        $customer->update(["active" => $active]);
+        return $customer;
+    }
 }
