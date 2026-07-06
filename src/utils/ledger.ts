@@ -141,6 +141,19 @@ export function getCurrentLiquidity(accounts: Account[], entries: JournalEntry[]
   };
 }
 
+export function getCashBalance(accounts: Account[], entries: JournalEntry[]) {
+  const contasCaixaBancos = accounts.filter(
+    (account) => account.nome === "Caixa" || account.nome === "Bancos"
+  );
+
+  const saldo = sumBalances(contasCaixaBancos, entries);
+
+  return {
+    saldo,
+    status: saldo >= 0 ? ("Positivo" as const) : ("Negativo" as const),
+  };
+}
+
 export function getAccountLedger(account: Account, entries: JournalEntry[]) {
   const movimentacoesOrdenadas = entries
     .filter((entry) => entry.partidas.some((partida) => partida.accountId === account.id))
