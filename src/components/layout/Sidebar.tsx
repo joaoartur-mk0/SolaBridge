@@ -25,8 +25,12 @@ const navigationItems = [
     end: true,
   },
   {
-    label: "Financeiro",
-    href: "/finance",
+    label: "Plano de Contas",
+    href: "/accounts",
+  },
+  {
+    label: "Lançamentos",
+    href: "/ledger",
   },
   {
     label: "Configurações",
