@@ -12,7 +12,7 @@ export const journalEntries: JournalEntry[] = [
     },
     {
         id: "LC-002",
-        description: "Compra de mercadorias a prazo",
+        description: "Compra de materiais de consumo a prazo",
         date: "2026-01-10",
         partidas: [
             { accountId: "CTA-1104", valor: 6000, natureza: "D" },
@@ -30,7 +30,7 @@ export const journalEntries: JournalEntry[] = [
     },
     {
         id: "LC-004",
-        description: "Venda de mercadoria a prazo",
+        description: "Prestação de serviço a prazo",
         date: "2026-01-18",
         partidas: [
             { accountId: "CTA-1103", valor: 4200, natureza: "D" },
@@ -39,7 +39,7 @@ export const journalEntries: JournalEntry[] = [
     },
     {
         id: "LC-005",
-        description: "Baixa do custo da mercadoria vendida",
+        description: "Baixa de materiais consumidos na prestação do serviço",
         date: "2026-01-18",
         partidas: [
             { accountId: "CTA-5101", valor: 2500, natureza: "D" },

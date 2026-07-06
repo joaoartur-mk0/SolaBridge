@@ -104,7 +104,7 @@ export function Dashboard() {
           title="NFS-e emitidas"
           value={String(dashboard.invoicesIssued)}
           description={`${rascunhoCount} notas em rascunho`}
-          icon={<span>NF</span>}
+          icon={<span>NFS-e</span>}
         />
       </section>
 
@@ -112,7 +112,7 @@ export function Dashboard() {
         <Card>
           <CardHeader>
             <SectionHeader
-              title="Notas fiscais recentes"
+              title="NFS-e recentes"
               description="Últimas NFS-e registradas no sistema."
               action={
                 <Button variant="secondary">
