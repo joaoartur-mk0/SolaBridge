@@ -1,4 +1,9 @@
-import type { HTMLAttributes, TableHTMLAttributes } from "react";
+import type {
+  HTMLAttributes,
+  TableHTMLAttributes,
+  TdHTMLAttributes,
+  ThHTMLAttributes,
+} from "react";
 import { cn } from "../../utils/cn";
 
 export function Table({
@@ -56,7 +61,7 @@ export function TableRow({
 export function TableHead({
   className,
   ...props
-}: HTMLAttributes<HTMLTableCellElement>) {
+}: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
       className={cn(
@@ -71,7 +76,7 @@ export function TableHead({
 export function TableCell({
   className,
   ...props
-}: HTMLAttributes<HTMLTableCellElement>) {
+}: TdHTMLAttributes<HTMLTableCellElement>) {
   return (
     <td
       className={cn("px-4 py-3 text-slate-300", className)}

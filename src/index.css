@@ -28,3 +28,69 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0.2cm;
+  }
+
+  html,
+  body {
+    width: 210mm;
+    min-height: 297mm;
+    background: white !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .danfse-print-area,
+  .danfse-print-area * {
+    visibility: visible !important;
+  }
+
+  .danfse-print-area {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .danfse-print-paper {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+.danfse-a4-page {
+  aspect-ratio: 210 / 297;
+}
+
+.danfse-pdf-mode {
+  width: 794px !important;
+  min-height: 1123px !important;
+  padding: 12px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.danfse-pdf-mode article {
+  width: 100% !important;
+  min-height: 1123px !important;
+  border: 1px solid #000000 !important;
+}

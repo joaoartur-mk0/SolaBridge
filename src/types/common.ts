@@ -1,9 +1,9 @@
 // Invoice
-export type InvoiceStatus = 
-    | "Emitida" 
-    | "Pendente" 
-    | "Cancelada" 
-    | "Rejeitada";
+export type InvoiceStatus =
+    | "Emitida"
+    | "Cancelada"
+    | "Rascunho"
+    | "Contingência";
 
 // Customers
 export type CustomerType = 
