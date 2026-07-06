@@ -14,17 +14,26 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table
-                ->foreignId("lancamento_id")
-                ->constraint("lancamentos")
+                ->foreignId("tenant_id")
+                ->constrained("tenants")
                 ->cascadeOnDelete();
             $table
-                ->foreignId("contas_id")
-                ->constraint("contas")
+                ->foreignId("lancamento_id")
+                ->constrained("lancamentos")
+                ->cascadeOnDelete();
+            $table
+                ->foreignId("conta_id")
+                ->constrained("contas")
                 ->cascadeOnDelete();
             $table
                 ->foreignId("produto_id")
                 ->nullable()
                 ->constrained("produtos")
+                ->nullOnDelete();
+            $table
+                ->foreignId("servico_id")
+                ->nullable()
+                ->constrained("servicos")
                 ->nullOnDelete();
             $table->decimal("valor", 15, 2);
             $table->enum("natureza", ["D", "C"]);

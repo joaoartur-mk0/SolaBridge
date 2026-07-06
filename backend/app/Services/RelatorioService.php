@@ -90,7 +90,8 @@ class RelatorioService
             "ativo" => $totalAtivo,
             "passivo" => $totalPassivo,
             "patrimonio_liquido" => $totalPL,
-            "equacao_valida" => $totalAtivo === $totalPassivo + $totalPL,
+            "equacao_valida" =>
+                abs($totalAtivo - ($totalPassivo + $totalPL)) < 0.01,
         ];
     }
 
@@ -102,7 +103,7 @@ class RelatorioService
         $conta = Conta::findOrFail($contaId);
         $naturezaConta = strtoupper($conta->natureza);
 
-        $query = Partida::with("lancamento")->where("contas_id", $contaId);
+        $query = Partida::with("lancamento")->where("conta_id", $contaId);
 
         if ($dataInicio && $dataFim) {
             $query->whereHas("lancamento", function ($q) use (
@@ -177,13 +178,13 @@ class RelatorioService
             $passivoCirculantesDebitos - $passivoCirculantesCreditos;
 
         $indice = 0;
-        if ($totalAtivosCirculantes > 0) {
-            $indice = $totalAtivosCirculantes / $totalAtivosCirculantes;
+        if ($passivoAtivosCirculantes > 0) {
+            $indice = $totalAtivosCirculantes / $passivoAtivosCirculantes;
         }
 
         return [
-            "ativo_circulante" => $totalAtivoCirculante,
-            "passivo_circulante" => $totalPassivoCirculante,
+            "ativo_circulante" => $totalAtivosCirculantes,
+            "passivo_circulante" => $passivoAtivosCirculantes,
             "indice_liquidez_corrente" => round($indice, 2),
             "status" =>
                 $indice >= 1
@@ -200,12 +201,9 @@ class RelatorioService
             ->where("natureza", "D")
             ->sum("valor");
 
-        $totalSaidas = Partida::$totalEntradas = Partida::whereHas(
-            "conta",
-            function ($q) {
-                $q->whereIn("nome", ["Caixa", "Bancos"]);
-            },
-        )
+        $totalSaidas = Partida::whereHas("conta", function ($q) {
+            $q->whereIn("nome", ["Caixa", "Bancos"]);
+        })
             ->where("natureza", "C")
             ->sum("valor");
 

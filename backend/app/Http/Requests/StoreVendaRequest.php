@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VendaRequest extends FormRequest
+class StoreVendaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,8 @@ class VendaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "customer_id" => "required|exists:customers,id",
             "produto_id" => "required|exists:produtos,id",
+            "customer_id" => "required|exists:customers,id",
             "quantidade" => "required|numeric|min:0.001",
             "valor_total" => "required|numeric|min:0.01",
             "forma_pagamento" => "required|in:A_VISTA,PRAZO",
@@ -39,7 +39,7 @@ class VendaRequest extends FormRequest
                 "O produto selecionado não está cadastrado no sistema!",
             "valor_total.min" => "O valor da venda deve ser maior que zero!",
             "customer_id.exists" =>
-                "O cliente selecionado não está cadastrado no sustema!",
+                "O cliente selecionado não está cadastrado no sistema!",
             "quantidade.min" =>
                 "A quantidade do produto deve ser maior que zero!",
             "forma_pagamento.in" => "Forma de pagamento inválida!",

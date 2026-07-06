@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\RelatorioService;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
 class RelatorioController extends Controller
 {
@@ -15,6 +16,31 @@ class RelatorioController extends Controller
         $this->relatorioService = $relatorioService;
     }
 
+    #[
+        OA\Get(
+            path: "/relatorios/dre",
+            summary: "Demonstração de Resultado do Exercício (DRE)",
+            tags: ["Relatórios"],
+            security: [["bearerAuth" => []]],
+            parameters: [
+                new OA\Parameter(
+                    name: "inicio",
+                    in: "query",
+                    required: false,
+                    schema: new OA\Schema(type: "string", format: "date"),
+                ),
+                new OA\Parameter(
+                    name: "fim",
+                    in: "query",
+                    required: false,
+                    schema: new OA\Schema(type: "string", format: "date"),
+                ),
+            ],
+            responses: [
+                new OA\Response(response: 200, description: "DRE do tenant."),
+            ],
+        ),
+    ]
     public function dre(Request $request)
     {
         try {
@@ -37,6 +63,20 @@ class RelatorioController extends Controller
         }
     }
 
+    #[
+        OA\Get(
+            path: "/relatorios/balanco",
+            summary: "Balanço Patrimonial (Ativo, Passivo e PL)",
+            tags: ["Relatórios"],
+            security: [["bearerAuth" => []]],
+            responses: [
+                new OA\Response(
+                    response: 200,
+                    description: "Balanço patrimonial do tenant.",
+                ),
+            ],
+        ),
+    ]
     public function balanco()
     {
         try {
@@ -56,6 +96,40 @@ class RelatorioController extends Controller
         }
     }
 
+    #[
+        OA\Get(
+            path: "/relatorios/razao/{contaId}",
+            summary: "Extrato do razão (Livro Razão) de uma conta contábil",
+            tags: ["Relatórios"],
+            security: [["bearerAuth" => []]],
+            parameters: [
+                new OA\Parameter(
+                    name: "contaId",
+                    in: "path",
+                    required: true,
+                    schema: new OA\Schema(type: "integer"),
+                ),
+                new OA\Parameter(
+                    name: "inicio",
+                    in: "query",
+                    required: false,
+                    schema: new OA\Schema(type: "string", format: "date"),
+                ),
+                new OA\Parameter(
+                    name: "fim",
+                    in: "query",
+                    required: false,
+                    schema: new OA\Schema(type: "string", format: "date"),
+                ),
+            ],
+            responses: [
+                new OA\Response(
+                    response: 200,
+                    description: "Movimentações e saldo acumulado da conta.",
+                ),
+            ],
+        ),
+    ]
     public function razao(Request $request, $contaId)
     {
         try {
@@ -81,6 +155,20 @@ class RelatorioController extends Controller
         }
     }
 
+    #[
+        OA\Get(
+            path: "/relatorios/liquidez",
+            summary: "Índice de Liquidez Corrente",
+            tags: ["Relatórios"],
+            security: [["bearerAuth" => []]],
+            responses: [
+                new OA\Response(
+                    response: 200,
+                    description: "Índice de liquidez corrente do tenant.",
+                ),
+            ],
+        ),
+    ]
     public function liquidezCorrente()
     {
         try {
@@ -101,6 +189,20 @@ class RelatorioController extends Controller
         }
     }
 
+    #[
+        OA\Get(
+            path: "/relatorios/caixa-bancos",
+            summary: "Saldo consolidado de Caixa e Bancos",
+            tags: ["Relatórios"],
+            security: [["bearerAuth" => []]],
+            responses: [
+                new OA\Response(
+                    response: 200,
+                    description: "Saldo consolidado de Caixa e Bancos.",
+                ),
+            ],
+        ),
+    ]
     public function saldoCaixaBancos()
     {
         try {

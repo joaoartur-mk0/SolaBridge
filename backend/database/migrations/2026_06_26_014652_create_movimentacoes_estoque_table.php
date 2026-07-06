@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create("movimentacoes_estoque", function (Blueprint $table) {
             $table->id();
             $table
-                ->foreignId("tenants_id")
+                ->foreignId("tenant_id")
                 ->constrained("tenants")
                 ->cascadeOnDelete();
             $table

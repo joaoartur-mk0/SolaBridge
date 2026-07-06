@@ -3,18 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\TenantScope;
 
 class Supplier extends Model
 {
-    protected $table = "supplier";
+    protected $table = "suppliers";
     protected $fillable = [
-        "tenants_id",
+        "tenant_id",
         "tipo_pessoa",
         "documento",
         "nome",
         "email",
         "telefone",
+        "active",
     ];
+
+    protected function casts(): array
+    {
+        return [
+            "active" => "boolean",
+        ];
+    }
 
     protected static function booted()
     {
@@ -22,11 +31,11 @@ class Supplier extends Model
     }
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, "tenants_id");
+        return $this->belongsTo(Tenant::class, "tenant_id");
     }
     public function titulos()
     {
-        return $this->hasMany(TitulosFinanceiros::class);
+        return $this->hasMany(TituloFinanceiro::class);
     }
     public function lancamento()
     {

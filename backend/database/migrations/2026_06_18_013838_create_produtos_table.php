@@ -17,9 +17,12 @@ return new class extends Migration {
                 ->foreignId("tenant_id")
                 ->constrained("tenants")
                 ->cascadeOnDelete();
-
+            $table->string("ncm")->nullable();
+            $table->string("cfop")->nullable();
+            $table->string("cest")->nullable();
+            $table->enum("unidade", ["KG", "UN", "LT", "ML", "G", "CX"]);
             $table->string("codigo_sku")->nullable();
-            $table->string("nome");
+            $table->string("descricao");
             $table->decimal("preco_venda", 15, 2)->default(0);
             $table->decimal("custo_medio", 15, 2)->default(0);
             $table->timestamps();

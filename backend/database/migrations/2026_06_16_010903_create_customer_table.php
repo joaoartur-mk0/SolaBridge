@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create("customer", function (Blueprint $table) {
+        Schema::create("customers", function (Blueprint $table) {
             $table->id();
             $table
-                ->foreignId("tenants_id")
+                ->foreignId("tenant_id")
                 ->constrained("tenants")
                 ->cascadeOnDelete();
             $table->enum("tipo_pessoa", ["PF", "PJ"]);
@@ -21,7 +21,21 @@ return new class extends Migration {
             $table->string("nome");
             $table->string("email")->nullable();
             $table->string("telefone")->nullable();
-            $table->unique(["tenants_id", "documento"]);
+
+            // Tomador nacional
+            $table->string("inscricao_estadual")->nullable();
+            $table->string("inscricao_municipal")->nullable();
+
+            // Tomador estrangeiro
+            $table->string("nif")->nullable();
+            $table->string("codigo_pais")->nullable();
+
+            // Endereçamento (código IBGE do município, 7 dígitos)
+            $table->char("codigo_ibge", 7)->nullable();
+
+            $table->boolean("active")->default(true);
+
+            $table->unique(["tenant_id", "documento"]);
             $table->timestamps();
         });
     }

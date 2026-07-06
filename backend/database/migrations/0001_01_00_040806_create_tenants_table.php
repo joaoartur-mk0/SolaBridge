@@ -24,7 +24,15 @@ return new class extends Migration {
 
             $table->string("razao_social")->nullable();
             $table->string("inscricao_estadual")->nullable()->unique();
+            $table->string("inscricao_municipal")->nullable();
             $table->string("cnae")->nullable();
+            $table->enum("regime_tributacao", [
+                "MEI",
+                "ME",
+                "SIMPLES_NACIONAL",
+                "LUCRO_PRESUMIDO",
+                "LUCRO_REAL",
+            ]);
 
             $table->timestamps();
         });

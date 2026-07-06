@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create("supplier", function (Blueprint $table) {
+        Schema::create("suppliers", function (Blueprint $table) {
             $table->id();
             $table
-                ->foreignId("tenants_id")
+                ->foreignId("tenant_id")
                 ->constrained("tenants")
                 ->cascadeOnDelete();
             $table->enum("tipo_pessoa", ["PF", "PJ"]);
@@ -21,7 +21,8 @@ return new class extends Migration {
             $table->string("nome");
             $table->string("email")->nullable();
             $table->string("telefone")->nullable();
-            $table->unique(["tenants_id", "documento"]);
+            $table->boolean("active")->default(true);
+            $table->unique(["tenant_id", "documento"]);
             $table->timestamps();
         });
     }

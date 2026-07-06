@@ -14,18 +14,18 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table
-                ->foreignId("tenants_id")
+                ->foreignId("tenant_id")
                 ->constrained("tenants")
                 ->onDelete("cascade");
             $table
                 ->foreignId("customer_id")
                 ->nullable()
-                ->constrained("customer")
+                ->constrained("customers")
                 ->nullOnDelete();
             $table
                 ->foreignId("supplier_id")
                 ->nullable()
-                ->constrained("supplier")
+                ->constrained("suppliers")
                 ->nullOnDelete();
             $table
                 ->foreignId("titulo_id")

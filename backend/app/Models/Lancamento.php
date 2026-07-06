@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lancamento extends Model
 {
-    protected $table = "lançamentos";
+    protected $table = "lancamentos";
     public $timestamps = false;
     protected $fillable = [
-        "tenants_id",
+        "tenant_id",
         "customer_id",
         "supplier_id",
         "titulo_id",
@@ -19,11 +19,11 @@ class Lancamento extends Model
 
     public function partidas()
     {
-        return $this->hasMany(Partida::class, "lançamento_id");
+        return $this->hasMany(Partida::class, "lancamento_id");
     }
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, "tenants_id");
+        return $this->belongsTo(Tenant::class, "tenant_id");
     }
     public function customer()
     {
@@ -32,5 +32,13 @@ class Lancamento extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, "supplier_id");
+    }
+    public function titulo()
+    {
+        return $this->belongsTo(TituloFinanceiro::class, "titulo_id");
+    }
+    public function movimentacoes()
+    {
+        return $this->hasMany(MovimentacaoEstoque::class, "lancamento_id");
     }
 }

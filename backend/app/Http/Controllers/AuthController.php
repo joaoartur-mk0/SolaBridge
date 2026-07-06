@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use OpenApi\Attributes as OA;
+
+class AuthController extends Controller
+{
+    #[
+        OA\Post(
+            path: "/login",
+            summary: "Autentica um usuário e retorna o token Sanctum",
+            tags: ["Autenticação"],
+            requestBody: new OA\RequestBody(
+                required: true,
+                content: new OA\JsonContent(
+                    required: ["email", "password"],
+                    properties: [
+                        new OA\Property(
+                            property: "email",
+                            type: "string",
+                            example: "joao@techsolutions.com",
+                        ),
+                        new OA\Property(
+                            property: "password",
+                            type: "string",
+                            example: "SenhaForte123!",
+                        ),
+                    ],
+                ),
+            ),
+            responses: [
+                new OA\Response(
+                    response: 200,
+                    description: "Login efetuado com sucesso.",
+                ),
+                new OA\Response(
+                    response: 401,
+                    description: "Credenciais inválidas.",
+                ),
+            ],
+        ),
+    ]
+    public function login(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required",
+        ]);
+
+        $user = User::where("email", $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "Credenciais inválidas. Verifique o seu e-mail e password.",
+                ],
+                401,
+            );
+        }
+        $token = $user->createToken("app_token")->plainTextToken;
+
+        return response()->json(
+            [
+                "success" => true,
+                "message" => "Login efetuado com sucesso.",
+                "token" => $token,
+                "user" => [
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "role" => $user->role,
+                    "tenant_id" => $user->tenant_id,
+                ],
+            ],
+            200,
+        );
+    }
+}

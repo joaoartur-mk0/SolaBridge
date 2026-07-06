@@ -3,29 +3,37 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\TenantScope;
 
-class Produto extends Model{
+class Produto extends Model
+{
     protected $table = "produtos";
     protected $fillable = [
-        "tenants_id",
+        "tenant_id",
+        "ncm",
+        "cfop",
+        "cest",
+        "unidade",
         "codigo_sku",
-        "nome",
-        "tipo",
+        "descricao",
         "preco_venda",
-        "custo_medio"
+        "custo_medio",
     ];
 
     protected static function booted()
     {
         static::addGlobalScope(new TenantScope());
     }
-    return function tenant(){
-        return $this->belongsTo(Tenant::class, "tenants_id");
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, "tenant_id");
     }
-    return function partition(){
+    public function partition()
+    {
         return $this->hasMany(Partida::class);
     }
-    return function estoque(){
-        return $this->hasMany(Estoque::class);
+    public function estoque()
+    {
+        return $this->hasMany(MovimentacaoEstoque::class);
     }
 }
