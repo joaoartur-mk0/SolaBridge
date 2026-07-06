@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { customers, invoices, services } from "../../mocks";
+import { customers, invoices as invoicesMock } from "../../mocks";
 import type { InvoiceStatus } from "../../types/common";
+import { mapInvoiceStatus } from "../../utils/invoiceStatus";
 
 import { PageHeader } from "../../components/shared/PageHeader";
 import { StatusBadge } from "../../components/shared/StatusBadge";
 
-import { Button } from "../../components/ui/Button";
+import { Dropdown } from "../../components/ui/Dropdown";
 import { Input } from "../../components/ui/Input";
 import { Select } from "../../components/ui/Select";
 import {
@@ -21,19 +22,6 @@ import {
 
 type StatusFilter = InvoiceStatus | "Todos";
 
-function mapInvoiceStatus(status: InvoiceStatus) {
-  switch (status) {
-    case "Emitida":
-      return "issued" as const;
-    case "Pendente":
-      return "pending" as const;
-    case "Rejeitada":
-      return "rejected" as const;
-    case "Cancelada":
-      return "cancelled" as const;
-  }
-}
-
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -42,6 +30,9 @@ function formatCurrency(value: number) {
 }
 
 export function InvoicesPage() {
+  const navigate = useNavigate();
+
+  const [invoices, setInvoices] = useState(invoicesMock);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Todos");
 
@@ -51,11 +42,8 @@ export function InvoicesPage() {
       customerName:
         customers.find((customer) => customer.id === invoice.customerId)?.name ??
         invoice.customerId,
-      serviceName:
-        services.find((service) => service.id === invoice.serviceId)?.name ??
-        invoice.serviceId,
     }));
-  }, []);
+  }, [invoices]);
 
   const filteredRows = rows.filter((row) => {
     const matchesSearch =
@@ -67,22 +55,25 @@ export function InvoicesPage() {
     return matchesSearch && matchesStatus;
   });
 
+  function handleCancel(invoiceId: string) {
+    setInvoices((current) =>
+      current.map((invoice) =>
+        invoice.id === invoiceId ? { ...invoice, status: "Cancelada" as const } : invoice
+      )
+    );
+  }
+
   return (
     <div className="space-y-8">
       <PageHeader
         title="Notas fiscais"
-        description="Acompanhe as NFS-e emitidas, pendentes e canceladas."
-        action={
-          <Link to="/invoices/new">
-            <Button>Emitir NFS-e</Button>
-          </Link>
-        }
+        description="Histórico das NFS-e emitidas, em rascunho, canceladas ou em contingência."
       />
 
       <div className="flex flex-col gap-4 md:flex-row">
         <div className="flex-1">
           <Input
-            placeholder="Pesquisar por número ou cliente..."
+            placeholder="Pesquisar por número ou destinatário..."
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -95,8 +86,8 @@ export function InvoicesPage() {
           >
             <option value="Todos">Todos os status</option>
             <option value="Emitida">Emitida</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Rejeitada">Rejeitada</option>
+            <option value="Rascunho">Rascunho</option>
+            <option value="Contingência">Contingência</option>
             <option value="Cancelada">Cancelada</option>
           </Select>
         </div>
@@ -106,12 +97,11 @@ export function InvoicesPage() {
         <TableHeader>
           <TableRow>
             <TableHead>Número</TableHead>
-            <TableHead>Cliente</TableHead>
-            <TableHead>Serviço</TableHead>
+            <TableHead>Destinatário</TableHead>
             <TableHead>Emissão</TableHead>
             <TableHead>Valor</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Ações</TableHead>
+            <TableHead>Situação</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -124,8 +114,6 @@ export function InvoicesPage() {
 
               <TableCell>{invoice.customerName}</TableCell>
 
-              <TableCell>{invoice.serviceName}</TableCell>
-
               <TableCell>{invoice.issueDate}</TableCell>
 
               <TableCell>{formatCurrency(invoice.amount)}</TableCell>
@@ -134,17 +122,40 @@ export function InvoicesPage() {
                 <StatusBadge status={mapInvoiceStatus(invoice.status)} />
               </TableCell>
 
-              <TableCell>
-                <Link to="/invoices/preview">
-                  <Button variant="secondary">Visualizar</Button>
-                </Link>
+              <TableCell className="text-right">
+                <Dropdown
+                  items={[
+                    {
+                      label: "Visualizar",
+                      onClick: () => navigate("/invoices/preview"),
+                    },
+                    {
+                      label: "Editar",
+                      onClick: () => navigate("/invoices/new"),
+                      disabled: invoice.status === "Cancelada",
+                    },
+                    {
+                      label: "Baixar",
+                      onClick: () =>
+                        alert(
+                          "Download simulado: a geração real do PDF acontece na tela de pré-visualização."
+                        ),
+                    },
+                    {
+                      label: "Cancelar",
+                      onClick: () => handleCancel(invoice.id),
+                      variant: "danger",
+                      disabled: invoice.status === "Cancelada",
+                    },
+                  ]}
+                />
               </TableCell>
             </TableRow>
           ))}
 
           {filteredRows.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-slate-500">
+              <TableCell colSpan={6} className="text-center text-slate-500">
                 Nenhuma nota fiscal encontrada.
               </TableCell>
             </TableRow>

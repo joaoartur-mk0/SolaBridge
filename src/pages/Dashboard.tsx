@@ -1,5 +1,3 @@
-import type { ComponentProps } from "react";
-
 import { dashboard } from "../mocks/dashboard";
 import { invoices } from "../mocks/invoices";
 
@@ -20,35 +18,13 @@ import {
 } from "../components/ui/Table";
 import { Link } from "react-router-dom";
 
-type StatusBadgeStatus = ComponentProps<typeof StatusBadge>["status"];
+import { mapInvoiceStatus } from "../utils/invoiceStatus";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
   }).format(value);
-}
-
-function mapInvoiceStatus(status: string): StatusBadgeStatus {
-  const normalizedStatus = status.toLowerCase();
-
-  if (normalizedStatus === "emitida" || normalizedStatus === "issued") {
-    return "issued";
-  }
-
-  if (normalizedStatus === "pendente" || normalizedStatus === "pending") {
-    return "pending";
-  }
-
-  if (normalizedStatus === "rejeitada" || normalizedStatus === "rejected") {
-    return "rejected";
-  }
-
-  if (normalizedStatus === "cancelada" || normalizedStatus === "cancelled") {
-    return "cancelled";
-  }
-
-  return "draft";
 }
 
 const recentInvoices = invoices.map((invoice) => ({

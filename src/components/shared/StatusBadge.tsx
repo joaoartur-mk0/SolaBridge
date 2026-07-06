@@ -1,21 +1,13 @@
 import { Badge } from "../ui/Badge";
 
 type StatusBadgeProps = {
-  status: "issued" | "pending" | "rejected" | "cancelled" | "draft";
+  status: "issued" | "cancelled" | "draft" | "contingency";
 };
 
 const statusMap = {
   issued: {
     label: "Emitida",
     variant: "success",
-  },
-  pending: {
-    label: "Pendente",
-    variant: "warning",
-  },
-  rejected: {
-    label: "Rejeitada",
-    variant: "danger",
   },
   cancelled: {
     label: "Cancelada",
@@ -24,6 +16,10 @@ const statusMap = {
   draft: {
     label: "Rascunho",
     variant: "info",
+  },
+  contingency: {
+    label: "Contingência",
+    variant: "warning",
   },
 } as const;
 

@@ -15,7 +15,7 @@ export const invoices: Invoice[] = [
         serviceId: "SER-002",
         issueDate: "2026-06-25",
         amount: 1200,
-        status: "Pendente"
+        status: "Rascunho"
     },
     {
         id: "INV-003",
@@ -31,6 +31,6 @@ export const invoices: Invoice[] = [
         serviceId: "SER-001",
         issueDate: "2026-07-03",
         amount: 3500,
-        status: "Rejeitada"
+        status: "Contingência"
     }
 ];
