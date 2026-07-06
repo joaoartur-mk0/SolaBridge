@@ -8,9 +8,11 @@ import { Button } from "../../components/ui/Button";
 
 import type { DanfseData } from "../../types/danfse";
 import { getDanfsePreview } from "../../services/nfsePreviewService";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export function InvoicePreviewPage() {
+  const location = useLocation();
+
   const [danfse, setDanfse] = useState<DanfseData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -20,7 +22,8 @@ export function InvoicePreviewPage() {
   useEffect(() => {
     async function loadPreview() {
       try {
-        const data = await getDanfsePreview();
+        const emittedDanfse = (location.state as { danfse?: DanfseData } | null)?.danfse;
+        const data = emittedDanfse ?? (await getDanfsePreview());
         setDanfse(data);
       } finally {
         setIsLoading(false);
@@ -28,7 +31,7 @@ export function InvoicePreviewPage() {
     }
 
     loadPreview();
-  }, []);
+  }, [location.state]);
 
   function handlePrintDanfse() {
     window.print();
@@ -82,8 +85,9 @@ export function InvoicePreviewPage() {
           </p>
 
           <p className="mt-1 text-sm text-slate-400">
-            Esta tela já está estruturada para trocar o mock por um payload vindo do Laravel.
-            O backend deve retornar os dados normalizados da NFS-e/XML, e o frontend apenas renderiza o DANFSe.
+            Ao emitir pela tela de emissão, este preview já reflete os dados preenchidos no
+            formulário. Acessando esta página diretamente, exibimos um exemplo mockado. A
+            integração com o backend substituirá ambos os fluxos por uma chamada real à API.
           </p>
         </div>
       </div>
