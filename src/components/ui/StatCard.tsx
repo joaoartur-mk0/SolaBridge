@@ -3,7 +3,7 @@ import { Card, CardContent } from "./Card";
 
 type StatCardProps = {
   title: string;
-  value: string;
+  value: ReactNode;
   description?: string;
   icon?: ReactNode;
 };

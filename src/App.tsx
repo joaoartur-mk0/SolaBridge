@@ -10,6 +10,10 @@ import { InvoicePreviewPage } from "./pages/Invoices/InvoicePreviewPage";
 import { InvoicesPage } from "./pages/Invoices/InvoicesPage";
 import { AccountsPage } from "./pages/Accounts/AccountsPage";
 import { JournalEntriesPage } from "./pages/Ledger/JournalEntriesPage";
+import { BalanceSheetPage } from "./pages/Reports/BalanceSheetPage";
+import { IncomeStatementPage } from "./pages/Reports/IncomeStatementPage";
+import { LiquidityPage } from "./pages/Reports/LiquidityPage";
+import { AccountLedgerPage } from "./pages/Reports/AccountLedgerPage";
 import { SettingsPage } from "./pages/Settings/SettingsPage";
 
 function App() {
@@ -28,6 +32,11 @@ function App() {
 
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/ledger" element={<JournalEntriesPage />} />
+
+        <Route path="/balanco" element={<BalanceSheetPage />} />
+        <Route path="/dre" element={<IncomeStatementPage />} />
+        <Route path="/liquidez" element={<LiquidityPage />} />
+        <Route path="/extrato" element={<AccountLedgerPage />} />
 
         <Route path="/settings" element={<SettingsPage />} />
 
