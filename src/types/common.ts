@@ -10,18 +10,12 @@ export type CustomerType =
     | "Pessoa Física" 
     | "Pessoa Jurídica";
 
-// Finance
-export type FinanceType = 
-    | "Receita" 
-    | "Despesa";                        
-export type FinanceCategory = 
-    | "Serviços"
-    | "Impostos" 
-    | "Salários"  
-    | "Infraestrutura"
-    | "Marketing" 
-    | "Outros"; 
-export type PaymentStatus =
-    | "Pago"
-    | "Pendente"
-    | "Atrasado";
+// Plano de contas / Lançamentos contábeis
+export type AccountType =
+    | "ATIVO"
+    | "PASSIVO"
+    | "PL"
+    | "RECEITA"
+    | "DESPESA";
+
+export type EntryNature = "D" | "C";

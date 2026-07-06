@@ -2,35 +2,48 @@ import { NavLink } from "react-router-dom";
 
 import { cn } from "../../utils/cn";
 
-const navigationItems = [
+type NavigationItem = {
+  label: string;
+  href: string;
+  end?: boolean;
+};
+
+type NavigationGroup = {
+  title?: string;
+  items: NavigationItem[];
+};
+
+const navigationGroups: NavigationGroup[] = [
   {
-    label: "Dashboard",
-    href: "/",
+    items: [{ label: "Dashboard", href: "/", end: true }],
   },
   {
-    label: "Clientes",
-    href: "/customers",
+    title: "NFS-e",
+    items: [
+      { label: "Clientes", href: "/customers" },
+      { label: "Serviços", href: "/services" },
+      { label: "Emitir NFS-e", href: "/invoices/new" },
+      { label: "Notas fiscais", href: "/invoices", end: true },
+    ],
   },
   {
-    label: "Serviços",
-    href: "/services",
+    title: "Contabilidade",
+    items: [
+      { label: "Plano de Contas", href: "/accounts" },
+      { label: "Lançamentos", href: "/ledger" },
+    ],
   },
   {
-    label: "Emitir NFS-e",
-    href: "/invoices/new",
+    title: "Relatórios",
+    items: [
+      { label: "Balanço Patrimonial", href: "/balanco" },
+      { label: "DRE", href: "/dre" },
+      { label: "Liquidez Corrente", href: "/liquidez" },
+      { label: "Extrato / Razão", href: "/extrato" },
+    ],
   },
   {
-    label: "Notas fiscais",
-    href: "/invoices",
-    end: true,
-  },
-  {
-    label: "Financeiro",
-    href: "/finance",
-  },
-  {
-    label: "Configurações",
-    href: "/settings",
+    items: [{ label: "Configurações", href: "/settings" }],
   },
 ];
 
@@ -51,23 +64,33 @@ export function Sidebar() {
         </p>
       </div>
 
-      <nav className="space-y-1">
-        {navigationItems.map((item) => (
-          <NavLink
-            key={item.href}
-            to={item.href}
-            end={item.end ?? item.href === "/"}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition",
-                isActive
-                  ? "bg-lime-400 text-slate-950"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
-              )
-            }
-          >
-            {item.label}
-          </NavLink>
+      <nav className="space-y-5">
+        {navigationGroups.map((group, groupIndex) => (
+          <div key={group.title ?? groupIndex} className="space-y-1">
+            {group.title && (
+              <p className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                {group.title}
+              </p>
+            )}
+
+            {group.items.map((item) => (
+              <NavLink
+                key={item.href}
+                to={item.href}
+                end={item.end ?? false}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition",
+                    isActive
+                      ? "bg-lime-400 text-slate-950"
+                      : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+                  )
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
         ))}
       </nav>
     </aside>

@@ -1,5 +1,6 @@
 import { dashboard } from "../mocks/dashboard";
 import { invoices } from "../mocks/invoices";
+import { accounts, journalEntries } from "../mocks";
 
 import { PageHeader } from "../components/shared/PageHeader";
 import { SectionHeader } from "../components/shared/SectionHeader";
@@ -19,6 +20,7 @@ import {
 import { Link } from "react-router-dom";
 
 import { mapInvoiceStatus } from "../utils/invoiceStatus";
+import { getCashBalance, getIncomeStatement } from "../utils/ledger";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -53,6 +55,13 @@ const taxSummary = [
 ];
 
 export function Dashboard() {
+  const caixaBancos = getCashBalance(accounts, journalEntries);
+  const dre = getIncomeStatement(accounts, journalEntries);
+  const isLucro = dre.resultadoLiquido >= 0;
+
+  const rascunhoCount = invoices.filter((invoice) => invoice.status === "Rascunho").length;
+  const contingenciaCount = invoices.filter((invoice) => invoice.status === "Contingência").length;
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -74,24 +83,28 @@ export function Dashboard() {
         />
 
         <StatCard
-          title="Despesas do mês"
-          value={formatCurrency(dashboard.monthlyExpenses)}
-          description="Saídas registradas no período"
-          icon={<span>↘</span>}
+          title="Saldo em Caixa e Bancos"
+          value={formatCurrency(caixaBancos.saldo)}
+          description="Consolidado das contas Caixa e Bancos"
+          icon={<span>$</span>}
         />
 
         <StatCard
-          title="Saldo estimado"
-          value={formatCurrency(dashboard.balance)}
-          description="Receitas menos despesas"
+          title="Resultado do Período"
+          value={
+            <span className={isLucro ? "text-emerald-400" : "text-red-400"}>
+              {formatCurrency(dre.resultadoLiquido)}
+            </span>
+          }
+          description={isLucro ? "Lucro apurado no período" : "Prejuízo apurado no período"}
           icon={<span>=</span>}
         />
 
         <StatCard
           title="NFS-e emitidas"
           value={String(dashboard.invoicesIssued)}
-          description={`${dashboard.pendingInvoices} notas pendentes`}
-          icon={<span>NF</span>}
+          description={`${rascunhoCount} notas em rascunho`}
+          icon={<span>NFS-e</span>}
         />
       </section>
 
@@ -99,7 +112,7 @@ export function Dashboard() {
         <Card>
           <CardHeader>
             <SectionHeader
-              title="Notas fiscais recentes"
+              title="NFS-e recentes"
               description="Últimas NFS-e registradas no sistema."
               action={
                 <Button variant="secondary">
@@ -190,15 +203,13 @@ export function Dashboard() {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/50 p-4">
-                  <span className="text-sm text-slate-300">Notas pendentes</span>
-                  <span className="font-semibold text-yellow-300">
-                    {dashboard.pendingInvoices}
-                  </span>
+                  <span className="text-sm text-slate-300">Notas em rascunho</span>
+                  <span className="font-semibold text-yellow-300">{rascunhoCount}</span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/50 p-4">
-                  <span className="text-sm text-slate-300">Notas rejeitadas</span>
-                  <span className="font-semibold text-red-300">0</span>
+                  <span className="text-sm text-slate-300">Notas em contingência</span>
+                  <span className="font-semibold text-amber-300">{contingenciaCount}</span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/50 p-4">
