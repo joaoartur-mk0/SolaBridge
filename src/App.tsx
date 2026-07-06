@@ -7,6 +7,9 @@ import CustomersPage from "./pages/Customers/CustomersPage";
 import ServicesPage from "./pages/Services/ServicesPage";
 import { CreateInvoicePage } from "./pages/Invoices/CreateInvoicePage";
 import { InvoicePreviewPage } from "./pages/Invoices/InvoicePreviewPage";
+import { InvoicesPage } from "./pages/Invoices/InvoicesPage";
+import FinancePage from "./pages/Finance/FinancePage";
+import { SettingsPage } from "./pages/Settings/SettingsPage";
 
 function App() {
   return (
@@ -20,17 +23,11 @@ function App() {
         <Route path="/invoices/new" element={<CreateInvoicePage />} />
         <Route path="/invoices/preview" element={<InvoicePreviewPage />} />
 
-        <Route
-          path="/invoices"
-        />
+        <Route path="/invoices" element={<InvoicesPage />} />
 
-        <Route
-          path="/finance"
-        />
+        <Route path="/finance" element={<FinancePage />} />
 
-        <Route
-          path="/settings"
-        />
+        <Route path="/settings" element={<SettingsPage />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
