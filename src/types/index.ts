@@ -10,4 +10,3 @@ export * from "./ids";
 export * from "./address";
 export * from "./money";
 export * from "./date";
-export * from "./auth";
