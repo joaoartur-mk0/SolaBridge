@@ -71,10 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (credentials: LoginCredentials): Promise<LoginResult> => {
       try {
-        // 1. Always request the CSRF cookie first for Sanctum
+        // CORRECTED: Sanctum CSRF route must be at the root, NOT behind /api/v1/
         await apiFetch("/sanctum/csrf-cookie", { method: "GET", auth: false });
 
-        // 2. Perform the Login
+        // Perform the login
         const response = await apiFetch<LoginApiResponse>("/login", {
           method: "POST",
           body: credentials,
