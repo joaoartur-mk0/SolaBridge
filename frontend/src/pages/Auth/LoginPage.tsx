@@ -64,12 +64,6 @@ export function LoginPage() {
     navigate(redirectTo, { replace: true });
   }
 
-  function handleFillDemoAccount(demoEmail: string) {
-    setEmail(demoEmail);
-    setPassword("solabridge123");
-    setError(null);
-  }
-
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100">
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden border-r border-slate-800 bg-slate-900/40 p-12 lg:flex">
@@ -180,29 +174,6 @@ export function LoginPage() {
               </Button>
             </form>
           </Card>
-
-          <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Ambiente de demonstração
-            </p>
-
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => handleFillDemoAccount("sergio@solabridge.com")}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-slate-700"
-              >
-                sergio@solabridge.com
-              </button>
-              <button
-                type="button"
-                onClick={() => handleFillDemoAccount("joao@solabridge.com")}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-slate-700"
-              >
-                joao@solabridge.com
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -2,48 +2,63 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 
-import { mockAccounts } from "../mocks/auth";
-import type { AuthUser, LoginCredentials } from "../types/auth";
+import {
+  ApiError,
+  apiFetch,
+  clearAuthToken,
+  getAuthToken,
+  setAuthToken,
+  setUnauthorizedHandler,
+} from "../services/apiClient";
+import type { AuthUser, LoginCredentials, UserRole } from "../types/auth";
 
-const SESSION_STORAGE_KEY = "solabridge:auth-user";
+const USER_STORAGE_KEY = "solabridge:auth-user";
 
 type LoginResult = {
   success: boolean;
   message?: string;
 };
 
+type LoginApiResponse = {
+  success: boolean;
+  message: string;
+  token?: string;
+  user?: {
+    name: string;
+    email: string;
+    role: UserRole;
+    tenant_id: number;
+  };
+};
+
 type AuthContextValue = {
   user: AuthUser | null;
-  isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<LoginResult>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// Simula a latência de uma chamada real de API. Quando a integração com o
-// backend (Laravel/Sanctum) estiver pronta, essa função dá lugar a uma
-// chamada em src/services, mantendo a mesma assinatura de `login`.
-function fakeNetworkDelay(ms = 500) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 function readStoredUser(): AuthUser | null {
-  const stored = window.localStorage.getItem(SESSION_STORAGE_KEY);
+  // Sessão só é válida se token E usuário existirem juntos.
+  const token = getAuthToken();
+  const stored = window.localStorage.getItem(USER_STORAGE_KEY);
 
-  if (!stored) {
+  if (!token || !stored) {
     return null;
   }
 
   try {
     return JSON.parse(stored) as AuthUser;
   } catch {
-    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    window.localStorage.removeItem(USER_STORAGE_KEY);
+    clearAuthToken();
     return null;
   }
 }
@@ -51,41 +66,56 @@ function readStoredUser(): AuthUser | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
 
-  const login = useCallback(async (credentials: LoginCredentials): Promise<LoginResult> => {
-    await fakeNetworkDelay();
-
-    const normalizedEmail = credentials.email.trim().toLowerCase();
-
-    const account = mockAccounts.find(
-      (candidate) => candidate.email.toLowerCase() === normalizedEmail
-    );
-
-    if (!account || account.password !== credentials.password) {
-      return { success: false, message: "E-mail ou senha inválidos." };
-    }
-
-    const authUser: AuthUser = {
-      id: account.id,
-      name: account.name,
-      email: account.email,
-      role: account.role,
-    };
-
-    setUser(authUser);
-    window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
-
-    return { success: true };
-  }, []);
-
   const logout = useCallback(() => {
     setUser(null);
-    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    clearAuthToken();
+    window.localStorage.removeItem(USER_STORAGE_KEY);
   }, []);
 
-  const value = useMemo(
-    () => ({ user, isLoading: false, login, logout }),
-    [user, login, logout]
+  // Se qualquer chamada autenticada voltar 401 (token expirado/revogado),
+  // derruba a sessão automaticamente em qualquer lugar do app.
+  useEffect(() => {
+    setUnauthorizedHandler(logout);
+    return () => setUnauthorizedHandler(null);
+  }, [logout]);
+
+  const login = useCallback(
+    async (credentials: LoginCredentials): Promise<LoginResult> => {
+      try {
+        const response = await apiFetch<LoginApiResponse>("/login", {
+          method: "POST",
+          body: credentials,
+          auth: false,
+        });
+
+        if (!response.token || !response.user) {
+          return { success: false, message: "Resposta inesperada do servidor." };
+        }
+
+        const authUser: AuthUser = {
+          name: response.user.name,
+          email: response.user.email,
+          role: response.user.role,
+          tenantId: response.user.tenant_id,
+        };
+
+        setAuthToken(response.token);
+        window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(authUser));
+        setUser(authUser);
+
+        return { success: true };
+      } catch (error) {
+        if (error instanceof ApiError) {
+          return { success: false, message: error.firstFieldError ?? error.message };
+        }
+
+        return { success: false, message: "Não foi possível entrar. Tente novamente." };
+      }
+    },
+    []
   );
+
+  const value = useMemo(() => ({ user, login, logout }), [user, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
