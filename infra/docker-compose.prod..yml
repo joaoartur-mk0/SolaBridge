@@ -1,0 +1,53 @@
+version: "3.8"
+
+networks:
+  proxy_network:
+    driver: bridge
+  internal_network:
+    driver: bridge
+  public:
+    external: true
+  solabridgenet:
+    external: true
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infra/Dockerfile.frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`app.solasoftware.com`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+    networks:
+      - proxy_network
+      - public
+    restart: unless-stopped
+
+  backend-web:
+    image: nginx:alpine
+    volumes:
+      - ./backend:/var/www
+      - ./infra/nginx.conf:/etc/nginx/conf.d/default.conf
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.solasoftware.com`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+    networks:
+      - proxy_network
+      - internal_network
+      - public
+    restart: unless-stopped
+
+  backend-app:
+    build:
+      context: ./backend
+      dockerfile: ../infra/Dockerfile.backend
+    volumes:
+      - ./backend:/var/www
+    networks:
+      - internal_network
+    restart: unless-stopped
+
+volumes:
+  db_data:

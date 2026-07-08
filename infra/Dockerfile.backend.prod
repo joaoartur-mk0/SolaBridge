@@ -1,0 +1,30 @@
+FROM php:8.2-fpm-alpine
+
+# Swapped MySQL dependencies for PostgreSQL (postgresql-client and postgresql-dev)
+RUN apk add --no-cache \
+    zip \
+    unzip \
+    curl \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    postgresql-client \
+    postgresql-dev
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd xml
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www
+
+COPY ../backend/composer.json ../backend/composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist
+
+COPY ../backend .
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+USER www-data
+EXPOSE 9000
+CMD ["php-fpm"]
