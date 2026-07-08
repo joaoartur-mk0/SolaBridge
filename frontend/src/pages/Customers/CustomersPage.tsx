@@ -1,8 +1,16 @@
-import { useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent } from "react";
 
-import { customers as customersMock } from "../../mocks";
 import type { Customer } from "../../types/customer";
 import type { CustomerType } from "../../types/common";
+import type { Address } from "../../types/address";
+
+import { ApiError } from "../../services/apiClient";
+import {
+  createCustomer,
+  listCustomers,
+  updateCustomerLocalAddress,
+  updateCustomerStatus,
+} from "../../services/customersService";
 
 import { PageHeader } from "../../components/shared/PageHeader";
 import { SectionHeader } from "../../components/shared/SectionHeader";
@@ -27,6 +35,7 @@ const emptyForm = {
   document: "",
   email: "",
   phone: "",
+  codigoIbge: "",
   street: "",
   number: "",
   neighborhood: "",
@@ -36,6 +45,7 @@ const emptyForm = {
 };
 
 type CustomerForm = typeof emptyForm;
+type StatusFilter = "all" | "active" | "inactive";
 
 function customerToForm(customer: Customer): CustomerForm {
   return {
@@ -44,6 +54,7 @@ function customerToForm(customer: Customer): CustomerForm {
     document: customer.document,
     email: customer.email,
     phone: customer.phone,
+    codigoIbge: customer.address.codigoIbge || "",
     street: customer.address.street,
     number: customer.address.number,
     neighborhood: customer.address.neighborhood,
@@ -54,19 +65,55 @@ function customerToForm(customer: Customer): CustomerForm {
 }
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>(customersMock);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  // Não-nulo = editando só o endereço local de um cliente já existente.
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [form, setForm] = useState<CustomerForm>(emptyForm);
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
 
   const isPessoaJuridica = form.type === "Pessoa Jurídica";
+  const isEditingAddressOnly = editingCustomer !== null;
 
-  const filteredCustomers = customers.filter((customer) =>
-    customer.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const fetchCustomers = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError("");
+
+    try {
+      const data = await listCustomers({
+        search: search.trim() || undefined,
+        status: statusFilter === "all" ? undefined : statusFilter,
+      });
+
+      setCustomers(data);
+    } catch (error) {
+      setLoadError(
+        error instanceof ApiError
+          ? error.message
+          : "Não foi possível carregar os clientes."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [search, statusFilter]);
+
+  // Busca no servidor, com debounce pra não disparar uma request por tecla.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      fetchCustomers();
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [fetchCustomers]);
 
   function handleChange(field: keyof CustomerForm) {
     return (event: ChangeEvent<HTMLInputElement>) => {
@@ -79,41 +126,48 @@ export default function CustomersPage() {
   }
 
   function openCreateForm() {
-    setEditingId(null);
+    setEditingCustomer(null);
     setForm(emptyForm);
-    setError("");
+    setFormError("");
     setIsFormOpen(true);
   }
 
-  function openEditForm(customer: Customer) {
-    setEditingId(customer.id);
+  function openEditAddressForm(customer: Customer) {
+    setEditingCustomer(customer);
     setForm(customerToForm(customer));
-    setError("");
+    setFormError("");
     setIsFormOpen(true);
   }
 
   function closeForm() {
     setIsFormOpen(false);
-    setEditingId(null);
+    setEditingCustomer(null);
     setForm(emptyForm);
-    setError("");
+    setFormError("");
   }
 
-  function handleDelete(id: string) {
-    setCustomers((current) => current.filter((customer) => customer.id !== id));
+  async function handleToggleStatus(customer: Customer) {
+    setStatusUpdatingId(customer.id);
 
-    if (editingId === id) {
-      closeForm();
+    try {
+      const updated = await updateCustomerStatus(customer.id, !customer.active);
+
+      setCustomers((current) =>
+        current.map((item) => (item.id === customer.id ? updated : item))
+      );
+    } catch (error) {
+      setLoadError(
+        error instanceof ApiError
+          ? error.message
+          : "Não foi possível atualizar o status do cliente."
+      );
+    } finally {
+      setStatusUpdatingId(null);
     }
   }
 
-  function handleSubmit() {
-    if (!form.name.trim() || !form.document.trim()) {
-      setError(isPessoaJuridica ? "Preencha a razão social e o CNPJ." : "Preencha o nome e o CPF.");
-      return;
-    }
-
-    const address = {
+  async function handleSubmit() {
+    const address: Address = {
       street: form.street,
       number: form.number,
       neighborhood: form.neighborhood,
@@ -122,44 +176,68 @@ export default function CustomersPage() {
       zipCode: form.zipCode,
     };
 
-    if (editingId) {
+    // Editando um cliente existente: só o endereço (local) pode mudar aqui,
+    // não existe rota no backend pra atualizar os outros dados ainda.
+    if (editingCustomer) {
+      updateCustomerLocalAddress(editingCustomer.id, address);
+
       setCustomers((current) =>
-        current.map((customer) =>
-          customer.id === editingId
-            ? {
-                ...customer,
-                type: form.type,
-                name: form.name.trim(),
-                document: form.document.trim(),
-                email: form.email.trim(),
-                phone: form.phone.trim(),
-                address,
-              }
-            : customer
+        current.map((item) =>
+          item.id === editingCustomer.id ? { ...item, address } : item
         )
       );
-    } else {
-      const newCustomer: Customer = {
-        id: `CUS-${String(customers.length + 1).padStart(3, "0")}`,
+
+      closeForm();
+      return;
+    }
+
+    if (!form.name.trim() || !form.document.trim()) {
+      setFormError(
+        isPessoaJuridica ? "Preencha a razão social e o CNPJ." : "Preencha o nome e o CPF."
+      );
+      return;
+    }
+
+    if (form.codigoIbge && !/^\d{7}$/.test(form.codigoIbge.trim())) {
+      setFormError("O código IBGE do município deve ter exatamente 7 dígitos.");
+      return;
+    }
+
+    setIsSaving(true);
+    setFormError("");
+
+    try {
+      const newCustomer = await createCustomer({
         type: form.type,
         name: form.name.trim(),
         document: form.document.trim(),
         email: form.email.trim(),
         phone: form.phone.trim(),
+        codigoIbge: form.codigoIbge.trim(),
         address,
-      };
+      });
 
-      setCustomers((current) => [...current, newCustomer]);
+      setCustomers((current) =>
+        [...current, newCustomer].sort((a, b) => a.name.localeCompare(b.name))
+      );
+
+      closeForm();
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setFormError(error.firstFieldError ?? error.message);
+      } else {
+        setFormError("Não foi possível salvar o cliente.");
+      }
+    } finally {
+      setIsSaving(false);
     }
-
-    closeForm();
   }
 
   return (
     <div className="space-y-8">
       <PageHeader
         title="Clientes"
-        description="Cadastre, edite e visualize seus clientes."
+        description="Cadastre e visualize os clientes (tomadores) usados na emissão de NFS-e."
         action={
           <Button onClick={() => (isFormOpen ? closeForm() : openCreateForm())}>
             {isFormOpen ? "Fechar" : "Novo Cliente"}
@@ -171,9 +249,17 @@ export default function CustomersPage() {
         <Card>
           <CardHeader>
             <SectionHeader
-              title={editingId ? "Editar cliente" : "Novo cliente"}
-              description="Dados usados como tomador nas NFS-e emitidas."
-              action={<PersonTypeToggle value={form.type} onChange={handleTypeChange} />}
+              title={isEditingAddressOnly ? "Editar endereço" : "Novo cliente"}
+              description={
+                isEditingAddressOnly
+                  ? "Nome, documento e contato ainda não podem ser editados por aqui (falta rota no backend)."
+                  : "Dados usados como tomador nas NFS-e emitidas."
+              }
+              action={
+                !isEditingAddressOnly && (
+                  <PersonTypeToggle value={form.type} onChange={handleTypeChange} />
+                )
+              }
             />
           </CardHeader>
 
@@ -183,6 +269,7 @@ export default function CustomersPage() {
                 label={isPessoaJuridica ? "Razão social" : "Nome completo"}
                 value={form.name}
                 onChange={handleChange("name")}
+                disabled={isEditingAddressOnly}
               />
 
               <Input
@@ -190,6 +277,7 @@ export default function CustomersPage() {
                 placeholder={isPessoaJuridica ? "00.000.000/0000-00" : "000.000.000-00"}
                 value={form.document}
                 onChange={handleChange("document")}
+                disabled={isEditingAddressOnly}
               />
 
               <Input
@@ -197,48 +285,108 @@ export default function CustomersPage() {
                 type="email"
                 value={form.email}
                 onChange={handleChange("email")}
+                disabled={isEditingAddressOnly}
               />
 
               <Input
                 label="Telefone"
                 value={form.phone}
                 onChange={handleChange("phone")}
+                disabled={isEditingAddressOnly}
               />
+
+              {!isEditingAddressOnly && (
+                <div>
+                  <Input
+                    label="Código IBGE do município"
+                    placeholder="3550308"
+                    value={form.codigoIbge}
+                    onChange={handleChange("codigoIbge")}
+                    maxLength={7}
+                  />
+                  <p className="mt-1 text-xs text-slate-500">
+                    7 dígitos. Consulte em{" "}
+                    <span className="text-slate-400">
+                      geoservicos.ibge.gov.br
+                    </span>
+                    . Obrigatório para clientes nacionais.
+                  </p>
+                </div>
+              )}
             </div>
 
-            <div className="mt-6 grid gap-5 border-t border-slate-800 pt-5 md:grid-cols-2 xl:grid-cols-3">
-              <Input label="Rua" value={form.street} onChange={handleChange("street")} />
-              <Input label="Número" value={form.number} onChange={handleChange("number")} />
-              <Input
-                label="Bairro"
-                value={form.neighborhood}
-                onChange={handleChange("neighborhood")}
-              />
-              <Input label="Cidade" value={form.city} onChange={handleChange("city")} />
-              <Input label="Estado" value={form.state} onChange={handleChange("state")} />
-              <Input label="CEP" value={form.zipCode} onChange={handleChange("zipCode")} />
+            <div className="mt-6 border-t border-slate-800 pt-5">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Endereço (informações complementares — salvo só neste navegador)
+              </p>
+
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                <Input label="Rua" value={form.street} onChange={handleChange("street")} />
+                <Input label="Número" value={form.number} onChange={handleChange("number")} />
+                <Input
+                  label="Bairro"
+                  value={form.neighborhood}
+                  onChange={handleChange("neighborhood")}
+                />
+                <Input label="Cidade" value={form.city} onChange={handleChange("city")} />
+                <Input label="Estado" value={form.state} onChange={handleChange("state")} />
+                <Input label="CEP" value={form.zipCode} onChange={handleChange("zipCode")} />
+              </div>
             </div>
 
-            {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+            {formError && <p className="mt-4 text-sm text-red-400">{formError}</p>}
 
             <div className="mt-6 flex justify-end gap-3 border-t border-slate-800 pt-5">
               <Button variant="secondary" onClick={closeForm}>
                 Cancelar
               </Button>
 
-              <Button onClick={handleSubmit}>
-                {editingId ? "Salvar alterações" : "Salvar cliente"}
+              <Button onClick={handleSubmit} disabled={isSaving}>
+                {isSaving ? "Salvando…" : isEditingAddressOnly ? "Salvar endereço" : "Salvar cliente"}
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <Input
-        placeholder="Pesquisar cliente..."
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Input
+          placeholder="Pesquisar por nome ou documento..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          className="sm:max-w-sm"
+        />
+
+        <div className="inline-flex rounded-lg border border-slate-700 bg-slate-950 p-1">
+          {(
+            [
+              { value: "all", label: "Todos" },
+              { value: "active", label: "Ativos" },
+              { value: "inactive", label: "Inativos" },
+            ] as const
+          ).map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setStatusFilter(option.value)}
+              className={
+                "rounded-md px-3 py-1.5 text-sm font-medium transition " +
+                (statusFilter === option.value
+                  ? "bg-lime-400 text-slate-950"
+                  : "text-slate-400 hover:text-slate-100")
+              }
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loadError && (
+        <p className="rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {loadError}
+        </p>
+      )}
 
       <Table>
         <TableHeader>
@@ -249,47 +397,72 @@ export default function CustomersPage() {
             <TableHead>Email</TableHead>
             <TableHead>Telefone</TableHead>
             <TableHead>Cidade</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {filteredCustomers.map((customer) => (
-            <TableRow key={customer.id}>
-              <TableCell className="font-medium text-slate-100">
-                {customer.name}
-              </TableCell>
-
-              <TableCell>
-                <Badge variant={customer.type === "Pessoa Jurídica" ? "info" : "default"}>
-                  {customer.type === "Pessoa Jurídica" ? "PJ" : "PF"}
-                </Badge>
-              </TableCell>
-
-              <TableCell>{customer.document}</TableCell>
-
-              <TableCell>{customer.email}</TableCell>
-
-              <TableCell>{customer.phone}</TableCell>
-
-              <TableCell>{customer.address.city}</TableCell>
-
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button variant="secondary" onClick={() => openEditForm(customer)}>
-                    Editar
-                  </Button>
-                  <Button variant="danger" onClick={() => handleDelete(customer.id)}>
-                    Excluir
-                  </Button>
-                </div>
+          {isLoading && (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-slate-500">
+                Carregando clientes…
               </TableCell>
             </TableRow>
-          ))}
+          )}
 
-          {filteredCustomers.length === 0 && (
+          {!isLoading &&
+            customers.map((customer) => (
+              <TableRow key={customer.id}>
+                <TableCell className="font-medium text-slate-100">
+                  {customer.name}
+                </TableCell>
+
+                <TableCell>
+                  <Badge variant={customer.type === "Pessoa Jurídica" ? "info" : "default"}>
+                    {customer.type === "Pessoa Jurídica" ? "PJ" : "PF"}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>{customer.document}</TableCell>
+
+                <TableCell>{customer.email || "—"}</TableCell>
+
+                <TableCell>{customer.phone || "—"}</TableCell>
+
+                <TableCell>{customer.address.city || "—"}</TableCell>
+
+                <TableCell>
+                  <Badge variant={customer.active ? "success" : "default"}>
+                    {customer.active ? "Ativo" : "Inativo"}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button variant="secondary" onClick={() => openEditAddressForm(customer)}>
+                      Editar endereço
+                    </Button>
+
+                    <Button
+                      variant={customer.active ? "danger" : "secondary"}
+                      disabled={statusUpdatingId === customer.id}
+                      onClick={() => handleToggleStatus(customer)}
+                    >
+                      {statusUpdatingId === customer.id
+                        ? "Salvando…"
+                        : customer.active
+                          ? "Inativar"
+                          : "Ativar"}
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+
+          {!isLoading && customers.length === 0 && !loadError && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-slate-500">
+              <TableCell colSpan={8} className="text-center text-slate-500">
                 Nenhum cliente encontrado.
               </TableCell>
             </TableRow>
