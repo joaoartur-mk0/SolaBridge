@@ -19,10 +19,13 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
-COPY ../backend/composer.json ../backend/composer.lock ./
+COPY composer.json composer.lock ./
+
 RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist
 
-COPY ../backend .
+# We copy the rest of the backend directory contents into the working directory
+COPY . .
+
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 USER www-data
