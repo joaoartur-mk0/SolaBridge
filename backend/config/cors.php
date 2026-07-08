@@ -20,8 +20,6 @@ return [
 
     "allowed_origins" => ["https://solabridge.solasoftware.com.br"],
 
-    "allowed_origins" => ["*"],
-
     "allowed_origins_patterns" => [],
 
     "allowed_headers" => ["*"],
