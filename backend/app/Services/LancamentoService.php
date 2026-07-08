@@ -31,4 +31,27 @@ class LancamentoService
             return $lancamento;
         });
     }
+
+    public function listarLancamentos(array $filtros = [])
+    {
+        // Isolamento por tenant garantido pelo TenantScope global do Lancamento.
+        $query = Lancamento::with(["partidas.conta"]);
+
+        // Filtro por período (data do lançamento).
+        if (!empty($filtros["inicio"]) && !empty($filtros["fim"])) {
+            $query->whereBetween("date", [
+                $filtros["inicio"],
+                $filtros["fim"],
+            ]);
+        }
+
+        // Filtro por conta contábil (existe partida na conta informada).
+        if (!empty($filtros["conta_id"])) {
+            $query->whereHas("partidas", function ($q) use ($filtros) {
+                $q->where("conta_id", $filtros["conta_id"]);
+            });
+        }
+
+        return $query->orderByDesc("date")->paginate(15);
+    }
 }

@@ -38,6 +38,8 @@ return new class extends Migration {
             $table->jsonb("tributos")->nullable();
 
             $table->timestamps();
+            // Soft delete: exclusão lógica (DELETE /servicos/{id} apenas inativa).
+            $table->softDeletes();
         });
     }
 

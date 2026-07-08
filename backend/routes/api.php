@@ -42,7 +42,12 @@ Route::prefix("v1")->group(function () {
         ]);
 
         Route::post("/produtos", [ProdutoController::class, "store"]);
+
+        Route::get("/servicos", [ServicoController::class, "index"]);
         Route::post("/servicos", [ServicoController::class, "store"]);
+        Route::patch("/servicos/{id}", [ServicoController::class, "update"]);
+        Route::delete("/servicos/{id}", [ServicoController::class, "destroy"]);
+
         Route::post("/users", [UserController::class, "store"]);
 
         ## Processamentos
@@ -64,6 +69,7 @@ Route::prefix("v1")->group(function () {
         ]);
         Route::delete("/vendas/{id}", [VendaController::class, "destroy"]);
 
+        Route::get("/lancamentos", [LancamentoController::class, "index"]);
         Route::post("/lancamentos", [LancamentoController::class, "store"]);
 
         ## Relatórios

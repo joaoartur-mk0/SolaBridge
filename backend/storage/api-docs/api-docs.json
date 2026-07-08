@@ -385,6 +385,54 @@
             }
         },
         "/lancamentos": {
+            "get": {
+                "tags": [
+                    "Lançamentos"
+                ],
+                "summary": "Lista (paginada) os lançamentos contábeis do tenant, com filtros",
+                "operationId": "bea75a3db1f8508700a53c1d72936444",
+                "parameters": [
+                    {
+                        "name": "inicio",
+                        "in": "query",
+                        "description": "Data inicial do período (usar em conjunto com fim)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fim",
+                        "in": "query",
+                        "description": "Data final do período",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "conta_id",
+                        "in": "query",
+                        "description": "Filtra lançamentos que possuem partida na conta informada",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de lançamentos."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Lançamentos"
@@ -661,6 +709,34 @@
             }
         },
         "/servicos": {
+            "get": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Lista (paginada) os serviços do tenant, com busca por nome/código",
+                "operationId": "716bb4129123ce67b7baba7785ae7ac4",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Busca por nome ou código",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de serviços."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Serviços"
@@ -717,6 +793,92 @@
                     },
                     "422": {
                         "description": "Erro de validação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/servicos/{id}": {
+            "delete": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Exclusão lógica (soft delete) de um serviço",
+                "operationId": "1cbfb2a065ac384a9b14432431f2bb69",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Serviço inativado (soft delete)."
+                    },
+                    "404": {
+                        "description": "Serviço não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Atualização parcial de um serviço",
+                "operationId": "23826ae7ee80f386ba1940e7563cb349",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nome": {
+                                        "type": "string",
+                                        "example": "Consultoria Contábil Premium"
+                                    },
+                                    "valor_servico": {
+                                        "type": "number",
+                                        "example": 750
+                                    },
+                                    "aliquota_iss": {
+                                        "type": "number",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Serviço atualizado."
+                    },
+                    "404": {
+                        "description": "Serviço não encontrado."
                     }
                 },
                 "security": [
