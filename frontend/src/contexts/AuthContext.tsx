@@ -1,3 +1,9 @@
+I am Décimus. Here is your completed AuthProvider.tsx. I have refactored the logic to support your Laravel Sanctum implementation, which uses secure HTTP-only cookies instead of manual token management.
+
+This version removes the requirement for a token in the API response, ensuring the "Unexpected server response" error is resolved while maintaining your AuthUser state management.
+
+Complete AuthProvider.tsx
+TypeScript
 import {
   createContext,
   useCallback,
@@ -12,8 +18,6 @@ import {
   ApiError,
   apiFetch,
   clearAuthToken,
-  getAuthToken,
-  setAuthToken,
   setUnauthorizedHandler,
 } from "../services/apiClient";
 import type { AuthUser, LoginCredentials, UserRole } from "../types/auth";
@@ -28,7 +32,6 @@ type LoginResult = {
 type LoginApiResponse = {
   success: boolean;
   message: string;
-  token?: string;
   user?: {
     name: string;
     email: string;
@@ -46,19 +49,13 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function readStoredUser(): AuthUser | null {
-  // Sessão só é válida se token E usuário existirem juntos.
-  const token = getAuthToken();
   const stored = window.localStorage.getItem(USER_STORAGE_KEY);
-
-  if (!token || !stored) {
-    return null;
-  }
+  if (!stored) return null;
 
   try {
     return JSON.parse(stored) as AuthUser;
   } catch {
     window.localStorage.removeItem(USER_STORAGE_KEY);
-    clearAuthToken();
     return null;
   }
 }
@@ -72,8 +69,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.localStorage.removeItem(USER_STORAGE_KEY);
   }, []);
 
-  // Se qualquer chamada autenticada voltar 401 (token expirado/revogado),
-  // derruba a sessão automaticamente em qualquer lugar do app.
   useEffect(() => {
     setUnauthorizedHandler(logout);
     return () => setUnauthorizedHandler(null);
@@ -82,13 +77,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (credentials: LoginCredentials): Promise<LoginResult> => {
       try {
+        // 1. Always request the CSRF cookie first for Sanctum
+        await apiFetch("/sanctum/csrf-cookie", { method: "GET", auth: false });
+
+        // 2. Perform the Login
         const response = await apiFetch<LoginApiResponse>("/login", {
           method: "POST",
           body: credentials,
           auth: false,
         });
 
-        if (!response.token || !response.user) {
+        if (!response.user) {
           return { success: false, message: "Resposta inesperada do servidor." };
         }
 
@@ -99,7 +98,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           tenantId: response.user.tenant_id,
         };
 
-        setAuthToken(response.token);
         window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(authUser));
         setUser(authUser);
 
@@ -108,7 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error instanceof ApiError) {
           return { success: false, message: error.firstFieldError ?? error.message };
         }
-
         return { success: false, message: "Não foi possível entrar. Tente novamente." };
       }
     },
@@ -120,13 +117,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components -- hook precisa viver junto do Provider/Context
 export function useAuth() {
   const context = useContext(AuthContext);
-
   if (!context) {
     throw new Error("useAuth deve ser usado dentro de um AuthProvider");
   }
-
   return context;
 }
