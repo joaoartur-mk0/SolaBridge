@@ -27,6 +27,9 @@ return new class extends Migration {
             $table->enum("tipo", ["RECEBER", "PAGAR"]);
             $table->string("descricao");
             $table->decimal("valor_total", 15, 2);
+            // Controle de pagamento parcial e encargos (usados no PATCH /titulos).
+            $table->decimal("valor_pago", 15, 2)->default(0);
+            $table->decimal("juros", 15, 2)->default(0);
             $table->date("data_vencimento");
             $table
                 ->enum("status", ["PENDENTE", "PAGO", "ATRASADO", "CANCELADO"])

@@ -20,7 +20,9 @@ return new class extends Migration {
             $table->string("nome");
             $table->string("email");
             $table->string("contato");
-            $table->string("cep");
+            // cep é opcional no StoreTenantRequest (nullable) — a coluna precisa
+            // acompanhar, senão o onboarding/seed sem cep viola o NOT NULL.
+            $table->string("cep")->nullable();
 
             $table->string("razao_social")->nullable();
             $table->string("inscricao_estadual")->nullable()->unique();

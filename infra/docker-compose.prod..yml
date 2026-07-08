@@ -1,8 +1,6 @@
 version: "3.8"
 
 networks:
-  proxy_network:
-    driver: bridge
   internal_network:
     driver: bridge
   public:
@@ -10,17 +8,40 @@ networks:
   solabridgenet:
     external: true
 
+volumes:
+  db_data:
+
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin # Change this for production!
+      POSTGRES_DB: laravel
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d laravel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal_network
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend
       dockerfile: ../infra/Dockerfile.frontend
+      args:
+        - VITE_API_BASE_URL=https://solabridgeapi.solasoftware.com.br/api/v1
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`app.solasoftware.com`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.routers.frontend.rule=Host(`solabridge.solasoftware.com.br`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=meuresolver"
+      - "traefik.docker.network=public" # Forces Traefik to route via the public network
     networks:
-      - proxy_network
       - public
     restart: unless-stopped
 
@@ -31,10 +52,11 @@ services:
       - ./infra/nginx.conf:/etc/nginx/conf.d/default.conf
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.solasoftware.com`)"
-      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.backend.rule=Host(`solabridgeapi.solasoftware.com.br`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=meuresolver"
+      - "traefik.docker.network=public" # Forces Traefik to route via the public network
     networks:
-      - proxy_network
       - internal_network
       - public
     restart: unless-stopped
@@ -43,11 +65,18 @@ services:
     build:
       context: ./backend
       dockerfile: ../infra/Dockerfile.backend
+    environment:
+      APP_URL: https://solabridgeapi.solasoftware.com.br
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: laravel
+      DB_USERNAME: admin
+      DB_PASSWORD: admin
     volumes:
       - ./backend:/var/www
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - internal_network
     restart: unless-stopped
-
-volumes:
-  db_data:
