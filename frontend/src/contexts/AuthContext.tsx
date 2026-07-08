@@ -1,9 +1,3 @@
-I am Décimus. Here is your completed AuthProvider.tsx. I have refactored the logic to support your Laravel Sanctum implementation, which uses secure HTTP-only cookies instead of manual token management.
-
-This version removes the requirement for a token in the API response, ensuring the "Unexpected server response" error is resolved while maintaining your AuthUser state management.
-
-Complete AuthProvider.tsx
-TypeScript
 import {
   createContext,
   useCallback,
@@ -88,7 +82,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         if (!response.user) {
-          return { success: false, message: "Resposta inesperada do servidor." };
+          return {
+            success: false,
+            message: "Resposta inesperada do servidor.",
+          };
         }
 
         const authUser: AuthUser = {
@@ -104,12 +101,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: true };
       } catch (error) {
         if (error instanceof ApiError) {
-          return { success: false, message: error.firstFieldError ?? error.message };
+          return {
+            success: false,
+            message: error.firstFieldError ?? error.message,
+          };
         }
-        return { success: false, message: "Não foi possível entrar. Tente novamente." };
+        return {
+          success: false,
+          message: "Não foi possível entrar. Tente novamente.",
+        };
       }
     },
-    []
+    [],
   );
 
   const value = useMemo(() => ({ user, login, logout }), [user, login, logout]);
