@@ -16,7 +16,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin # Change this for production!
+      POSTGRES_PASSWORD: admin # Mude isso em produção!
       POSTGRES_DB: laravel
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -31,16 +31,16 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: ../infra/Dockerfile.frontend
+      context: ../frontend # Volta um nível para a raiz e entra em frontend
+      dockerfile: ../infra/Dockerfile.frontend # O caminho do dockerfile é relativo ao context
       args:
         - VITE_API_BASE_URL=https://solabridgeapi.solasoftware.com.br/api/v1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`solabridge.solasoftware.com.br`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=meuresolver"
-      - "traefik.docker.network=public" # Forces Traefik to route via the public network
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.docker.network=public"
     networks:
       - public
     restart: unless-stopped
@@ -48,14 +48,14 @@ services:
   backend-web:
     image: nginx:alpine
     volumes:
-      - ./backend:/var/www
-      - ./infra/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../backend:/var/www # Volta um nível para montar o código do backend
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf # nginx.conf está na mesma pasta infra
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`solabridgeapi.solasoftware.com.br`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=meuresolver"
-      - "traefik.docker.network=public" # Forces Traefik to route via the public network
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.docker.network=public"
     networks:
       - internal_network
       - public
@@ -63,8 +63,8 @@ services:
 
   backend-app:
     build:
-      context: ./backend
-      dockerfile: ../infra/Dockerfile.backend
+      context: ../backend # Volta um nível para a raiz e entra em backend
+      dockerfile: ../infra/Dockerfile.backend.prod # Usando o Dockerfile correto para produção
     environment:
       APP_URL: https://solabridgeapi.solasoftware.com.br
       DB_HOST: db
@@ -73,7 +73,7 @@ services:
       DB_USERNAME: admin
       DB_PASSWORD: admin
     volumes:
-      - ./backend:/var/www
+      - ../backend:/var/www
     depends_on:
       db:
         condition: service_healthy
