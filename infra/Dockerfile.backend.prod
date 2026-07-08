@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # Swapped MySQL dependencies for PostgreSQL (postgresql-client and postgresql-dev)
 RUN apk add --no-cache \
