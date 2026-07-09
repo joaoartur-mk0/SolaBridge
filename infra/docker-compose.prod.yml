@@ -31,17 +31,17 @@ services:
 
   frontend:
     build:
-      context: ../frontend # Volta um nível para a raiz e entra em frontend
-      dockerfile: ../infra/Dockerfile.frontend # O caminho do dockerfile é relativo ao context
+      context: ../frontend
+      dockerfile: ../infra/Dockerfile.frontend
       args:
-        - VITE_API_BASE_URL=https://solabridgeapi.solasoftware.com.br/api/v1
+        - VITE_API_BASE_URL=https://bridgeapi.solasoftware.com.br/api/v1
     volumes:
       - ./nginx-frontend.conf:/etc/nginx/conf.d/default.conf
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`solabridge.solasoftware.com.br`)"
+      - "traefik.http.routers.frontend.rule=Host(`bridge.solasoftware.com.br`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.frontend.tls.certresolver=meuresolver"
       - "traefik.docker.network=public"
     networks:
       - public
@@ -50,13 +50,12 @@ services:
   backend-web:
     image: nginx:alpine
     volumes:
-      - ../backend:/var/www # Volta um nível para montar o código do backend
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf # nginx.conf está na mesma pasta infra
-    labels:
+      - ../backend:/var/www
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`solabridgeapi.solasoftware.com.br`)"
+      - "traefik.http.routers.backend.rule=Host(`bridgeapi.solasoftware.com.br`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.routers.backend.tls.certresolver=meuresolver"
       - "traefik.docker.network=public"
     networks:
       - internal_network
@@ -65,10 +64,10 @@ services:
 
   backend-app:
     build:
-      context: ../backend # Volta um nível para a raiz e entra em backend
-      dockerfile: ../infra/Dockerfile.backend.prod # Usando o Dockerfile correto para produção
+      context: ../backend
+      dockerfile: ../infra/Dockerfile.backend.prod
     environment:
-      APP_URL: https://solabridgeapi.solasoftware.com.br
+      APP_URL: https://bridgeapi.solasoftware.com.br
       DB_HOST: db
       DB_PORT: 5432
       DB_DATABASE: laravel
