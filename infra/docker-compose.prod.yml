@@ -26,9 +26,9 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USERNAME:?defina DB_USERNAME em infra/.env}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD em infra/.env}
-      POSTGRES_DB: ${DB_DATABASE:?defina DB_DATABASE em infra/.env}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
@@ -48,7 +48,7 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_KEY: ${APP_KEY:?defina APP_KEY em infra/.env}
+      APP_KEY: ${APP_KEY}
       APP_URL: https://bridge.solasoftware.com.br
       LOG_CHANNEL: stderr # logs vão para o docker logs, não para arquivo.
       DB_CONNECTION: pgsql
