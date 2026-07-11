@@ -1,0 +1,17 @@
+# Evita copiar artefatos do host para a imagem de produção.
+# O vendor é instalado dentro do build (composer install); o .env NÃO é baixado
+# (segredos vêm por variáveis de ambiente do compose).
+.git
+.gitignore
+vendor
+node_modules
+.env
+.env.*
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*.php
+tests
+.phpunit.result.cache
+Dockerfile*
+docker-compose*
