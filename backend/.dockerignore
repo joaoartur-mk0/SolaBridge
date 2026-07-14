@@ -11,6 +11,9 @@ storage/logs/*.log
 storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/views/*.php
+# Caches do Laravel gerados no host (referenciam pacotes de DEV como o Telescope).
+# São regenerados em runtime pelo `config:cache` e pelo package discovery.
+bootstrap/cache/*.php
 tests
 .phpunit.result.cache
 Dockerfile*
