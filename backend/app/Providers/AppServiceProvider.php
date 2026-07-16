@@ -13,7 +13,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if (class_exists(TelescopeApplicationServiceProvider::class)) {
+        // Telescope SOMENTE em ambiente local. Além de ser dependência de dev
+        // (não existe em produção com `composer install --no-dev`), o guard de
+        // ambiente garante que ele não seja registrado fora de local mesmo que
+        // as dependências de dev estejam presentes.
+        if (
+            $this->app->environment("local") &&
+            class_exists(TelescopeApplicationServiceProvider::class)
+        ) {
             $this->app->register(TelescopeServiceProvider::class);
         }
     }

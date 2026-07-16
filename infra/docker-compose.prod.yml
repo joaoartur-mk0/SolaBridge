@@ -51,6 +51,7 @@ services:
       APP_KEY: ${APP_KEY}
       APP_URL: https://bridge.solasoftware.com.br
       LOG_CHANNEL: stderr # logs vão para o docker logs, não para arquivo.
+      TELESCOPE_ENABLED: "false" # reforço: Telescope nunca ativo em produção.
       DB_CONNECTION: pgsql
       DB_HOST: db
       DB_PORT: 5432
@@ -62,6 +63,7 @@ services:
     command: >
       sh -c "php artisan migrate --force &&
       php artisan config:cache &&
+      php artisan l5-swagger:generate &&
       php-fpm"
     depends_on:
       db:

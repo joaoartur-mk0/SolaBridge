@@ -12,6 +12,7 @@ import {
   ApiError,
   apiFetch,
   clearAuthToken,
+  setAuthToken,
   setUnauthorizedHandler,
 } from "../services/apiClient";
 import type { AuthUser, LoginCredentials, UserRole } from "../types/auth";
@@ -26,6 +27,9 @@ type LoginResult = {
 type LoginApiResponse = {
   success: boolean;
   message: string;
+  // Token pessoal (Sanctum) retornado pelo backend no login. É o que autentica
+  // todas as requisições seguintes via header Authorization: Bearer <token>.
+  token?: string;
   user?: {
     name: string;
     email: string;
@@ -78,12 +82,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           auth: false,
         });
 
-        if (!response.user) {
+        if (!response.token || !response.user) {
           return {
             success: false,
             message: "Resposta inesperada do servidor.",
           };
         }
+
+        // Guarda o Bearer token ANTES de tudo: é ele que autentica as próximas
+        // requisições (o apiClient injeta Authorization: Bearer automaticamente).
+        setAuthToken(response.token);
 
         const authUser: AuthUser = {
           name: response.user.name,
