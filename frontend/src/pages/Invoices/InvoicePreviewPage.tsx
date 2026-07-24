@@ -79,8 +79,8 @@ export function InvoicePreviewPage() {
           }
         />
 
-        <div className="mt-8 rounded-2xl border border-lime-400/20 bg-lime-400/5 p-4">
-          <p className="text-sm font-medium text-lime-300">
+        <div className="mt-8 rounded-2xl border border-brand/20 bg-brand/5 p-4">
+          <p className="text-sm font-medium text-brand-light">
             Preview baseado na Nota Técnica Nº 008 — DANFSe
           </p>
 
@@ -105,7 +105,7 @@ export function InvoicePreviewPage() {
       )}
 
       {!isLoading && !danfse && (
-        <div className="rounded-2xl border border-red-400/20 bg-red-400/5 p-6 text-sm text-red-300">
+        <div className="rounded-2xl border border-danger/20 bg-danger/5 p-6 text-sm text-danger">
           Não foi possível carregar a pré-visualização do DANFSe.
         </div>
       )}

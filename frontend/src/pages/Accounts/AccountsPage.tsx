@@ -149,7 +149,7 @@ export function AccountsPage() {
               <Badge variant="info">{naturezaPorTipo[tipo] === "D" ? "Devedora (D)" : "Credora (C)"}</Badge>
             </div>
 
-            {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+            {error && <p className="mt-3 text-sm text-danger">{error}</p>}
 
             <div className="mt-6 flex justify-end gap-3 border-t border-slate-800 pt-5">
               <Button variant="secondary" onClick={() => setIsFormOpen(false)}>

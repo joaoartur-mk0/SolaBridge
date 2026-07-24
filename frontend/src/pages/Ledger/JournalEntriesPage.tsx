@@ -192,13 +192,13 @@ export function JournalEntriesPage() {
 
         <CardContent>
           {accountsError && (
-            <p className="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <p className="mb-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
               {accountsError}
             </p>
           )}
 
           {!isLoadingAccounts && !accountsError && accounts.length === 0 && (
-            <p className="mb-4 rounded-lg border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+            <p className="mb-4 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
               Nenhuma conta encontrada no plano de contas deste tenant.
             </p>
           )}
@@ -279,7 +279,7 @@ export function JournalEntriesPage() {
           </div>
 
           {submitError && (
-            <p className="mt-4 rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <p className="mt-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
               {submitError}
             </p>
           )}
@@ -296,7 +296,7 @@ export function JournalEntriesPage() {
             </div>
 
             {!isBalanced && (totalDebito > 0 || totalCredito > 0) && (
-              <p className="text-sm text-red-400">
+              <p className="text-sm text-danger">
                 O total de débitos deve ser igual ao total de créditos (Princípio das Partidas Dobradas).
               </p>
             )}
@@ -309,7 +309,7 @@ export function JournalEntriesPage() {
       </Card>
 
       {entriesError && (
-        <p className="rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {entriesError}
         </p>
       )}

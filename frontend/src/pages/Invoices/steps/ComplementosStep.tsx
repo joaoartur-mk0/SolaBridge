@@ -16,7 +16,7 @@ export function ComplementosStep({ values, updateField }: ComplementosStepProps)
           type="checkbox"
           checked={values.hasIntermediary}
           onChange={(event) => updateField("hasIntermediary", event.target.checked)}
-          className="h-4 w-4 rounded border-slate-700 bg-slate-950 accent-lime-400"
+          className="h-4 w-4 rounded border-slate-700 bg-slate-950 accent-brand"
         />
         Esta operação possui intermediário
       </label>

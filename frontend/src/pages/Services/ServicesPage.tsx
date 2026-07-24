@@ -283,12 +283,12 @@ export default function ServicesPage() {
                   onChange={(event) =>
                     setForm((current) => ({ ...current, description: event.target.value }))
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
 
-            {formError && <p className="mt-4 text-sm text-red-400">{formError}</p>}
+            {formError && <p className="mt-4 text-sm text-danger">{formError}</p>}
 
             <div className="mt-6 flex justify-end gap-3 border-t border-slate-800 pt-5">
               <Button variant="secondary" onClick={closeForm}>
@@ -310,7 +310,7 @@ export default function ServicesPage() {
       />
 
       {loadError && (
-        <p className="rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {loadError}
         </p>
       )}

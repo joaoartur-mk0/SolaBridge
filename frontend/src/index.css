@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* Tokens de marca — ver MARKETING.md. Substituem o lime/emerald/sky/amber
+   padrão do Tailwind por tons dessaturados ("aço da ponte" + utilitários
+   apagados), evitando o visual vivo/neon. */
+@theme {
+  --color-brand: #3e7c99;
+  --color-brand-light: #6fa8c2;
+  --color-brand-hover: #52a0c0;
+  --color-positive: #4c9a7e;
+  --color-warning: #c99a3e;
+  --color-danger: #c4573f;
+}
+
 * {
   box-sizing: border-box;
 }

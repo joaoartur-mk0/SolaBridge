@@ -68,16 +68,16 @@ export function LoginPage() {
     <div className="flex min-h-screen bg-slate-950 text-slate-100">
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden border-r border-slate-800 bg-slate-900/40 p-12 lg:flex">
         <div
-          className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-lime-400/10 blur-3xl"
+          className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-brand/10 blur-3xl"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-lime-400/5 blur-3xl"
+          className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-brand/5 blur-3xl"
           aria-hidden
         />
 
         <div className="relative">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-lime-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-light">
             SolaBridge
           </p>
           <h1 className="mt-3 max-w-md text-3xl font-bold leading-tight text-slate-50">
@@ -92,7 +92,7 @@ export function LoginPage() {
         <div className="relative space-y-6">
           {highlights.map((highlight) => (
             <div key={highlight.title} className="flex items-start gap-4">
-              <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl border border-lime-400/30 bg-lime-400/10 text-lime-300">
+              <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl border border-brand/30 bg-brand/10 text-brand-light">
                 <highlight.icon className="h-5 w-5" />
               </div>
               <div>
@@ -111,7 +111,7 @@ export function LoginPage() {
       <div className="flex w-full flex-1 flex-col items-center justify-center px-6 py-12 lg:w-1/2">
         <div className="w-full max-w-sm">
           <div className="mb-8 text-center lg:text-left">
-            <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-lime-400 text-sm font-bold text-slate-950 lg:mx-0">
+            <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-brand text-sm font-bold text-slate-50 lg:mx-0">
               SB
             </div>
             <h2 className="text-xl font-semibold text-slate-50">Entrar no SolaBridge</h2>
@@ -157,7 +157,7 @@ export function LoginPage() {
               </div>
 
               {error && (
-                <p className="rounded-lg border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                <p className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
                   {error}
                 </p>
               )}

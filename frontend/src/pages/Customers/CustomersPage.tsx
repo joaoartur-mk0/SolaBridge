@@ -334,7 +334,7 @@ export default function CustomersPage() {
               </div>
             </div>
 
-            {formError && <p className="mt-4 text-sm text-red-400">{formError}</p>}
+            {formError && <p className="mt-4 text-sm text-danger">{formError}</p>}
 
             <div className="mt-6 flex justify-end gap-3 border-t border-slate-800 pt-5">
               <Button variant="secondary" onClick={closeForm}>
@@ -372,7 +372,7 @@ export default function CustomersPage() {
               className={
                 "rounded-md px-3 py-1.5 text-sm font-medium transition " +
                 (statusFilter === option.value
-                  ? "bg-lime-400 text-slate-950"
+                  ? "bg-brand text-slate-50"
                   : "text-slate-400 hover:text-slate-100")
               }
             >
@@ -383,7 +383,7 @@ export default function CustomersPage() {
       </div>
 
       {loadError && (
-        <p className="rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {loadError}
         </p>
       )}

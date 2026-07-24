@@ -58,7 +58,7 @@ export function MobileNav() {
                       cn(
                         "flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition",
                         isActive
-                          ? "bg-lime-400 text-slate-950"
+                          ? "bg-brand text-slate-50"
                           : "text-slate-300 hover:bg-slate-900"
                       )
                     }
@@ -84,9 +84,9 @@ export function MobileNav() {
               {({ isActive }) => (
                 <>
                   <item.icon
-                    className={cn("h-5 w-5", isActive ? "text-lime-400" : "text-slate-500")}
+                    className={cn("h-5 w-5", isActive ? "text-brand-light" : "text-slate-500")}
                   />
-                  <span className={isActive ? "text-lime-400" : "text-slate-500"}>
+                  <span className={isActive ? "text-brand-light" : "text-slate-500"}>
                     {item.label}
                   </span>
                 </>
@@ -98,7 +98,7 @@ export function MobileNav() {
             to="/invoices/new"
             className="flex flex-1 flex-col items-center gap-1 py-1 text-xs font-medium"
           >
-            <span className="-mt-5 flex h-11 w-11 items-center justify-center rounded-full border-4 border-slate-950 bg-lime-400 text-slate-950 shadow-lg">
+            <span className="-mt-5 flex h-11 w-11 items-center justify-center rounded-full border-4 border-slate-950 bg-brand text-slate-50 shadow-lg">
               <ReceiptText className="h-5 w-5" />
             </span>
             <span className="text-slate-300">Emitir</span>

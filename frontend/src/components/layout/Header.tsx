@@ -35,7 +35,7 @@ export function Header() {
           <p className="text-xs text-slate-500">{user ? roleLabels[user.role] : "—"}</p>
         </div>
 
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-lime-400 text-sm font-bold text-slate-950">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-bold text-slate-50">
           {user ? getInitials(user.name) : "SB"}
         </div>
 

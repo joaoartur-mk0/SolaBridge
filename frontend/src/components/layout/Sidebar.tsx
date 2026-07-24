@@ -7,7 +7,7 @@ export function Sidebar() {
   return (
     <aside className="hidden min-h-screen w-72 border-r border-slate-800 bg-slate-950 px-4 py-6 lg:block">
       <div className="mb-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-lime-400">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-light">
           SolaBridge
         </p>
 
@@ -38,7 +38,7 @@ export function Sidebar() {
                   cn(
                     "flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition",
                     isActive
-                      ? "bg-lime-400 text-slate-950"
+                      ? "bg-brand text-slate-50"
                       : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
                   )
                 }

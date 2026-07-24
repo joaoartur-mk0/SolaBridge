@@ -19,7 +19,7 @@ export function PersonTypeToggle({ value, onChange }: PersonTypeToggleProps) {
           className={cn(
             "rounded-md px-4 py-1.5 text-sm font-medium transition",
             value === type
-              ? "bg-lime-400 text-slate-950"
+              ? "bg-brand text-slate-50"
               : "text-slate-400 hover:text-slate-100"
           )}
         >
