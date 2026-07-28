@@ -64,7 +64,7 @@ export function Dropdown({ items, trigger }: DropdownProps) {
               className={cn(
                 "block w-full px-4 py-2 text-left text-sm transition disabled:cursor-not-allowed disabled:opacity-40",
                 item.variant === "danger"
-                  ? "text-red-300 hover:bg-red-500/10"
+                  ? "text-danger hover:bg-danger/10"
                   : "text-slate-200 hover:bg-slate-800"
               )}
             >

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\TenantScope;
 
 class Lancamento extends Model
 {
@@ -16,6 +17,11 @@ class Lancamento extends Model
         "description",
         "date",
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new TenantScope());
+    }
 
     public function partidas()
     {

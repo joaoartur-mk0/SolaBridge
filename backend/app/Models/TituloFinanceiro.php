@@ -15,6 +15,8 @@ class TituloFinanceiro extends Model
         "tipo",
         "descricao",
         "valor_total",
+        "valor_pago",
+        "juros",
         "data_vencimento",
         "status",
     ];

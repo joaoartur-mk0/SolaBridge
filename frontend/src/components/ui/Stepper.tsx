@@ -35,8 +35,8 @@ export function Stepper({ steps, currentStepIndex, onStepClick }: StepperProps) 
                 <span
                   className={cn(
                     "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold transition",
-                    isCompleted && "border-lime-400 bg-lime-400 text-slate-950",
-                    isCurrent && "border-lime-400 text-lime-300",
+                    isCompleted && "border-brand bg-brand text-slate-50",
+                    isCurrent && "border-brand text-brand-light",
                     !isCompleted && !isCurrent && "border-slate-700 text-slate-500"
                   )}
                 >
@@ -57,7 +57,7 @@ export function Stepper({ steps, currentStepIndex, onStepClick }: StepperProps) 
                 <span
                   className={cn(
                     "mx-3 h-px flex-1",
-                    isCompleted ? "bg-lime-400" : "bg-slate-800"
+                    isCompleted ? "bg-brand" : "bg-slate-800"
                   )}
                 />
               )}
@@ -74,7 +74,7 @@ export function Stepper({ steps, currentStepIndex, onStepClick }: StepperProps) 
 
         <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
           <div
-            className="h-1.5 rounded-full bg-lime-400 transition-all"
+            className="h-1.5 rounded-full bg-brand transition-all"
             style={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }}
           />
         </div>

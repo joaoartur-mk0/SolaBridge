@@ -18,14 +18,14 @@ export function Textarea({ label, error, className, id, ...props }: TextareaProp
       <textarea
         id={id}
         className={cn(
-          "min-h-28 w-full resize-y rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20",
-          error && "border-red-400 focus:border-red-400 focus:ring-red-400/20",
+          "min-h-28 w-full resize-y rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/20",
+          error && "border-danger focus:border-danger focus:ring-danger/20",
           className
         )}
         {...props}
       />
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
 }

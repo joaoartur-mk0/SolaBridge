@@ -1,0 +1,10 @@
+# Build de produção instala as deps do zero (npm ci) e recebe a URL da API via
+# build arg — o .env local (localhost) não deve ir para a imagem.
+.git
+.gitignore
+node_modules
+dist
+.env
+.env.*
+Dockerfile*
+docker-compose*

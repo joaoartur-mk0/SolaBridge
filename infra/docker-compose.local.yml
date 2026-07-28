@@ -1,64 +1,68 @@
-version: "3.8"
-
 networks:
-  proxy_network:
-    driver: bridge
   internal_network:
     driver: bridge
-  shared_db_network:
-    external: true
+
+volumes:
+  db_data:
 
 services:
-  traefik:
-    image: traefik:v2.10
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    ports:
-      - "80:80"
-      - "8080:8080"
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: laravel
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d laravel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
-      - proxy_network
-
+      - internal_network
   frontend:
     image: node:20-alpine
     working_dir: /app
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     volumes:
       - ../frontend:/app
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`app.localhost`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
     ports:
       - "5173:5173"
     networks:
-      - proxy_network
+      - internal_network
 
   backend-web:
     image: nginx:alpine
     volumes:
       - ../backend:/var/www
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
-      - "traefik.http.routers.backend.entrypoints=web"
+    ports:
+      - "8000:80"
+      - backend-app
     networks:
-      - proxy_network
       - internal_network
 
   backend-app:
     build:
       context: ../backend
       dockerfile: ../infra/Dockerfile.backend.local
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: laravel
+      DB_USERNAME: admin
+      DB_PASSWORD: admin
+      LOG_CHANNEL: stderr
+    command: >
+      sh -c "php artisan config:clear || true;
+      php artisan migrate --force &&
+      php artisan db:seed --force &&
+      php-fpm"
     volumes:
       - ../backend:/var/www
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - internal_network
-      - shared_db_network

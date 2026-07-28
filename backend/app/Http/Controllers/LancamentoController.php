@@ -6,6 +6,7 @@ use App\Http\Requests\StoreLancamentoRequest;
 use App\Services\LancamentoService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class LancamentoController extends Controller
@@ -17,6 +18,54 @@ class LancamentoController extends Controller
     public function __construct(LancamentoService $lancamentoService)
     {
         $this->lancamentoService = $lancamentoService;
+    }
+
+    #[
+        OA\Get(
+            path: "/lancamentos",
+            summary: "Lista (paginada) os lançamentos contábeis do tenant, com filtros",
+            tags: ["Lançamentos"],
+            security: [["bearerAuth" => []]],
+            parameters: [
+                new OA\Parameter(
+                    name: "inicio",
+                    in: "query",
+                    required: false,
+                    description: "Data inicial do período (usar em conjunto com fim)",
+                    schema: new OA\Schema(type: "string", format: "date"),
+                ),
+                new OA\Parameter(
+                    name: "fim",
+                    in: "query",
+                    required: false,
+                    description: "Data final do período",
+                    schema: new OA\Schema(type: "string", format: "date"),
+                ),
+                new OA\Parameter(
+                    name: "conta_id",
+                    in: "query",
+                    required: false,
+                    description: "Filtra lançamentos que possuem partida na conta informada",
+                    schema: new OA\Schema(type: "integer"),
+                ),
+            ],
+            responses: [
+                new OA\Response(
+                    response: 200,
+                    description: "Lista paginada de lançamentos.",
+                ),
+            ],
+        ),
+    ]
+    public function index(Request $request): JsonResponse
+    {
+        $lancamentos = $this->lancamentoService->listarLancamentos(
+            $request->query(),
+        );
+        return $this->successResponse(
+            "Lançamentos listados com sucesso!",
+            $lancamentos,
+        );
     }
 
     #[

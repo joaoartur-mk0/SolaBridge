@@ -1,0 +1,20 @@
+# Evita copiar artefatos do host para a imagem de produção.
+# O vendor é instalado dentro do build (composer install); o .env NÃO é baixado
+# (segredos vêm por variáveis de ambiente do compose).
+.git
+.gitignore
+vendor
+node_modules
+.env
+.env.*
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*.php
+# Caches do Laravel gerados no host (referenciam pacotes de DEV como o Telescope).
+# São regenerados em runtime pelo `config:cache` e pelo package discovery.
+bootstrap/cache/*.php
+tests
+.phpunit.result.cache
+Dockerfile*
+docker-compose*

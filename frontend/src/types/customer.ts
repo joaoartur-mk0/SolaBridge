@@ -10,4 +10,6 @@ export interface Customer {
     email: string;
     phone: string;
     address: Address;
+    /** Vem do backend (ativo/inativo). Opcional pra não quebrar os mocks antigos. */
+    active?: boolean;
 }

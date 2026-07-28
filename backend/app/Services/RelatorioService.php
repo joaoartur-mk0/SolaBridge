@@ -174,8 +174,11 @@ class RelatorioService
         })
             ->where("natureza", "C")
             ->sum("valor");
+        // Passivo tem natureza credora: saldo = Créditos - Débitos (igual ao
+        // Balanço Patrimonial). Antes estava invertido (Débitos - Créditos), o
+        // que zerava/negativava o denominador e retornava a liquidez errada.
         $passivoAtivosCirculantes =
-            $passivoCirculantesDebitos - $passivoCirculantesCreditos;
+            $passivoCirculantesCreditos - $passivoCirculantesDebitos;
 
         $indice = 0;
         if ($passivoAtivosCirculantes > 0) {

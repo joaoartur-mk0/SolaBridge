@@ -260,7 +260,7 @@ export function CreateInvoicePage() {
             </div>
 
             {!canAdvance && (
-              <p className="mt-3 text-sm text-red-400">
+              <p className="mt-3 text-sm text-danger">
                 Preencha os campos obrigatórios desta etapa para continuar.
               </p>
             )}
@@ -315,7 +315,7 @@ export function CreateInvoicePage() {
 
                 <div className="mt-3 flex items-center justify-between gap-4">
                   <span className="text-sm text-slate-400">Imposto estimado</span>
-                  <span className="font-semibold text-yellow-300">
+                  <span className="font-semibold text-warning">
                     {formatCurrency(estimatedTax)}
                   </span>
                 </div>
@@ -323,7 +323,7 @@ export function CreateInvoicePage() {
                 <div className="mt-3 border-t border-slate-800 pt-3">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-sm text-slate-300">Valor líquido estimado</span>
-                    <span className="font-bold text-lime-300">
+                    <span className="font-bold text-brand-light">
                       {formatCurrency(parsedAmount - estimatedTax)}
                     </span>
                   </div>
@@ -331,8 +331,8 @@ export function CreateInvoicePage() {
               </div>
 
               {!canEmit && (
-                <div className="rounded-xl border border-amber-400/20 bg-amber-400/5 p-4">
-                  <p className="text-sm font-medium text-amber-300">
+                <div className="rounded-xl border border-warning/20 bg-warning/5 p-4">
+                  <p className="text-sm font-medium text-warning">
                     Faltam campos obrigatórios
                   </p>
 
@@ -343,8 +343,8 @@ export function CreateInvoicePage() {
                 </div>
               )}
 
-              <div className="rounded-xl border border-lime-400/20 bg-lime-400/5 p-4">
-                <p className="text-sm font-medium text-lime-300">
+              <div className="rounded-xl border border-brand/20 bg-brand/5 p-4">
+                <p className="text-sm font-medium text-brand-light">
                   Emissão em modo demonstrativo
                 </p>
 

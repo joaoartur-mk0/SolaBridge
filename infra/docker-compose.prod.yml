@@ -1,0 +1,123 @@
+# ==========================================================================
+# Deploy de PRODUÇÃO (VPS) — proxy reverso Traefik EXTERNO na rede "public".
+# Segredos são lidos de um arquivo infra/.env (docker compose lê automaticamente
+# o .env do diretório do compose). NÃO commitar segredos reais.
+#
+# Domínio único: bridge.solasoftware.com.br
+#   /       -> frontend (SPA estática servida por Nginx)
+#   /api    -> backend  (Laravel via PHP-FPM)
+# ==========================================================================
+
+networks:
+  # Rede onde o Traefik já está publicado (criada fora deste compose:
+  #   docker network create public). Só o que precisa ser exposto entra nela.
+  public:
+    external: true
+  # Rede privada app <-> banco. Não é alcançável pelo Traefik nem pelo host.
+  internal:
+    driver: bridge
+
+volumes:
+  db_data:
+
+services:
+  # ---------------------------------------------------------------- Banco
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal # SOMENTE rede interna: sem portas publicadas, sem Traefik.
+
+  # ------------------------------------------------------ Backend (PHP-FPM)
+  backend-app:
+    build:
+      context: ../backend
+      dockerfile: ../infra/Dockerfile.backend.prod
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY}
+      APP_URL: https://bridge.solasoftware.com.br
+      LOG_CHANNEL: stderr # logs vão para o docker logs, não para arquivo.
+      TELESCOPE_ENABLED: "false" # reforço: Telescope nunca ativo em produção.
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    # No provisionamento: aplica migrations e faz cache de config (performance).
+    # route:cache NÃO é usado porque há rota em closure (api/user).
+    command: >
+      sh -c "php artisan migrate --force &&
+      php artisan config:cache &&
+      php artisan l5-swagger:generate &&
+      php-fpm"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal # PHP-FPM não é exposto: apenas o backend-web o alcança.
+
+  # ---------------------------------------------- Backend Web (Nginx -> FPM)
+  backend-web:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - backend-app
+    volumes:
+      # Só a config (read-only). O CÓDIGO não é montado aqui: o Nginx apenas
+      # repassa para o PHP-FPM (isolamento estrito de escopo).
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - public # exposto ao Traefik
+      - internal # para alcançar o backend-app (fastcgi)
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=public"
+      # Roteia SOMENTE /api do domínio para o backend (prioridade maior que o front).
+      - "traefik.http.routers.bridge-api.rule=Host(`bridge.solasoftware.com.br`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.bridge-api.entrypoints=websecure"
+      - "traefik.http.routers.bridge-api.tls.certresolver=meuresolver"
+      - "traefik.http.routers.bridge-api.priority=10"
+      - "traefik.http.services.bridge-api.loadbalancer.server.port=80"
+
+  # ------------------------------------------------- Frontend (SPA estática)
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../infra/Dockerfile.frontend
+      args:
+        # Mesma origem do site -> as chamadas do SPA para a API são same-origin.
+        VITE_API_BASE_URL: https://bridge.solasoftware.com.br/api/v1
+    restart: unless-stopped
+    volumes:
+      - ./nginx-frontend.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=public"
+      # HTTPS: serve a SPA (catch-all do host, prioridade menor que a API).
+      - "traefik.http.routers.bridge-frontend.rule=Host(`bridge.solasoftware.com.br`)"
+      - "traefik.http.routers.bridge-frontend.entrypoints=websecure"
+      - "traefik.http.routers.bridge-frontend.tls.certresolver=meuresolver"
+      - "traefik.http.routers.bridge-frontend.priority=1"
+      - "traefik.http.services.bridge-frontend.loadbalancer.server.port=80"
+      # Redirect HTTP -> HTTPS para todo o host (inclui /api).
+      - "traefik.http.middlewares.bridge-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.bridge-http.rule=Host(`bridge.solasoftware.com.br`)"
+      - "traefik.http.routers.bridge-http.entrypoints=web"
+      - "traefik.http.routers.bridge-http.middlewares=bridge-https"

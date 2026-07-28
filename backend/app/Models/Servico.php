@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Scopes\TenantScope;
 
 class Servico extends Model
 {
+    use SoftDeletes;
+
     protected $table = "servicos";
     protected $fillable = [
         "tenant_id",

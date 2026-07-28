@@ -1,4 +1,5 @@
 export interface Address {
+    codigoIbge?: string;
     street: string;
     number: string;
     neighborhood: string;

@@ -42,7 +42,7 @@ export function IncomeStatementPage() {
         <StatCard
           title="Resultado do Período"
           value={
-            <span className={isLucro ? "text-emerald-400" : "text-red-400"}>
+            <span className={isLucro ? "text-positive" : "text-danger"}>
               {formatCurrency(dre.resultadoLiquido)}
             </span>
           }

@@ -21,7 +21,7 @@ function BalanceRow({ label, value, strong = false }: { label: string; value: nu
         {label}
       </span>
 
-      <span className={strong ? "font-bold text-lime-300" : "font-medium text-slate-100"}>
+      <span className={strong ? "font-bold text-brand-light" : "font-medium text-slate-100"}>
         {formatCurrency(value)}
       </span>
     </div>

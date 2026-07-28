@@ -38,7 +38,7 @@ export function LiquidityPage() {
         <StatCard
           title="Índice de Liquidez Corrente"
           value={
-            <span className={isSaudavel ? "text-emerald-400" : "text-amber-400"}>
+            <span className={isSaudavel ? "text-positive" : "text-warning"}>
               {liquidez.indice.toFixed(2)}x
             </span>
           }

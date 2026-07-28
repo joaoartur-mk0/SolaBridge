@@ -92,7 +92,7 @@ export function Dashboard() {
         <StatCard
           title="Resultado do Período"
           value={
-            <span className={isLucro ? "text-emerald-400" : "text-red-400"}>
+            <span className={isLucro ? "text-positive" : "text-danger"}>
               {formatCurrency(dre.resultadoLiquido)}
             </span>
           }
@@ -178,7 +178,7 @@ export function Dashboard() {
                         {item.label}
                       </p>
 
-                      <p className="text-sm font-semibold text-lime-300">
+                      <p className="text-sm font-semibold text-brand-light">
                         {formatCurrency(item.value)}
                       </p>
                     </div>
@@ -204,17 +204,17 @@ export function Dashboard() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/50 p-4">
                   <span className="text-sm text-slate-300">Notas em rascunho</span>
-                  <span className="font-semibold text-yellow-300">{rascunhoCount}</span>
+                  <span className="font-semibold text-warning">{rascunhoCount}</span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/50 p-4">
                   <span className="text-sm text-slate-300">Notas em contingência</span>
-                  <span className="font-semibold text-amber-300">{contingenciaCount}</span>
+                  <span className="font-semibold text-warning">{contingenciaCount}</span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/50 p-4">
                   <span className="text-sm text-slate-300">Relatórios do mês</span>
-                  <span className="font-semibold text-lime-300">Atualizados</span>
+                  <span className="font-semibold text-positive">Atualizados</span>
                 </div>
               </div>
             </CardContent>
