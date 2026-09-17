@@ -23,6 +23,13 @@ export const navigationGroups: NavigationGroup[] = [
     ],
   },
   {
+    title: "Estoque",
+    items: [
+      { label: "Registrar Compra", href: "/compras/nova" },
+      { label: "Registrar Venda", href: "/vendas/nova" },
+    ],
+  },
+  {
     title: "Contabilidade",
     items: [
       { label: "Plano de Contas", href: "/accounts" },

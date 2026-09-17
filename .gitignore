@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+graphify-out
+
+# Documentos internos de negócio (não versionar)
+business/

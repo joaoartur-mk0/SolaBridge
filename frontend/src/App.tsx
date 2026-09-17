@@ -12,6 +12,8 @@ import { InvoicePreviewPage } from "./pages/Invoices/InvoicePreviewPage";
 import { InvoicesPage } from "./pages/Invoices/InvoicesPage";
 import { AccountsPage } from "./pages/Accounts/AccountsPage";
 import { JournalEntriesPage } from "./pages/Ledger/JournalEntriesPage";
+import { CompraFormPage } from "./pages/Compras/CompraFormPage";
+import { VendaFormPage } from "./pages/Vendas/VendaFormPage";
 import { BalanceSheetPage } from "./pages/Reports/BalanceSheetPage";
 import { IncomeStatementPage } from "./pages/Reports/IncomeStatementPage";
 import { LiquidityPage } from "./pages/Reports/LiquidityPage";
@@ -33,6 +35,9 @@ function AppRoutes() {
 
       <Route path="/accounts" element={<AccountsPage />} />
       <Route path="/ledger" element={<JournalEntriesPage />} />
+
+      <Route path="/compras/nova" element={<CompraFormPage />} />
+      <Route path="/vendas/nova" element={<VendaFormPage />} />
 
       <Route path="/balanco" element={<BalanceSheetPage />} />
       <Route path="/dre" element={<IncomeStatementPage />} />

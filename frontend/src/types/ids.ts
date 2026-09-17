@@ -3,3 +3,7 @@ export type ServiceId = string;
 export type InvoiceId = string;
 export type AccountId = string;
 export type JournalEntryId = string;
+export type SupplierId = string;
+export type ProductId = string;
+export type PurchaseId = string;
+export type SaleId = string;
