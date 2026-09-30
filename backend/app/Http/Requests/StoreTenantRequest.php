@@ -40,7 +40,7 @@ class StoreTenantRequest extends FormRequest
 
             // dados para cadastrar usuario admin padrao
             "admin_name" => "required|string|max:255",
-            "admin_email" => "required|email|max:255",
+            "admin_email" => "required|email|unique:users,email|max:255",
             "admin_password" => "required|string|min:8",
         ];
     }
@@ -49,6 +49,7 @@ class StoreTenantRequest extends FormRequest
     {
         return [
             "documento.unique" => "Entidade já cadastrada no sistema",
+            "admin_email.unique" => "Este e-mail já está cadastrado no sistema",
             "admin_password.min" => "Senha deve ter no mínimo 8 digitos",
             "contato.max" => "Parâmetro invalido| Contato em formato invalido",
             "tipo_pessoa.in" =>

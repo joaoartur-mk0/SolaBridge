@@ -21,8 +21,12 @@ Route::get("/user", function (Request $request) {
 Route::prefix("v1")->group(function () {
     # Public
     ## Autenticação
-    Route::post("/login", [AuthController::class, "login"]);
-    Route::post("/tenants", [TenantController::class, "store"]);
+    Route::post("/login", [AuthController::class, "login"])->middleware(
+        "throttle:login",
+    );
+    Route::post("/tenants", [TenantController::class, "store"])->middleware(
+        "throttle:cadastro-tenant",
+    );
 
     # Private
     Route::middleware("auth:sanctum")->group(function () {
@@ -48,7 +52,9 @@ Route::prefix("v1")->group(function () {
         Route::patch("/servicos/{id}", [ServicoController::class, "update"]);
         Route::delete("/servicos/{id}", [ServicoController::class, "destroy"]);
 
-        Route::post("/users", [UserController::class, "store"]);
+        Route::post("/users", [UserController::class, "store"])->middleware(
+            "can:admin",
+        );
 
         ## Processamentos
         Route::get("/compras", [CompraController::class, "index"]);
@@ -58,7 +64,10 @@ Route::prefix("v1")->group(function () {
             CompraController::class,
             "cancel",
         ]);
-        Route::delete("/compras/{id}", [CompraController::class, "destroy"]);
+        Route::delete("/compras/{id}", [
+            CompraController::class,
+            "destroy",
+        ])->middleware("can:admin");
 
         Route::get("/vendas", [VendaController::class, "index"]);
         Route::get("/vendas/{id}", [VendaController::class, "show"]);
@@ -67,7 +76,10 @@ Route::prefix("v1")->group(function () {
             VendaController::class,
             "cancel",
         ]);
-        Route::delete("/vendas/{id}", [VendaController::class, "destroy"]);
+        Route::delete("/vendas/{id}", [
+            VendaController::class,
+            "destroy",
+        ])->middleware("can:admin");
 
         Route::get("/lancamentos", [LancamentoController::class, "index"]);
         Route::post("/lancamentos", [LancamentoController::class, "store"]);
