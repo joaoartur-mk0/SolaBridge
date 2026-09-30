@@ -3,10 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use App\Http\Requests\Concerns\ValidaDoTenant;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVendaRequest extends FormRequest
 {
+    use ValidaDoTenant;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,8 +26,8 @@ class StoreVendaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "produto_id" => "required|exists:produtos,id",
-            "customer_id" => "required|exists:customers,id",
+            "produto_id" => ["required", $this->existeNoTenant("produtos")],
+            "customer_id" => ["required", $this->existeNoTenant("customers")],
             "quantidade" => "required|numeric|min:0.001",
             "valor_total" => "required|numeric|min:0.01",
             "forma_pagamento" => "required|in:A_VISTA,PRAZO",
