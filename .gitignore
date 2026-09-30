@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+# Dockerfile de desenvolvimento do backend deve ser versionado.
+!infra/Dockerfile.backend.local
 
 # Editor directories and files
 .vscode/*

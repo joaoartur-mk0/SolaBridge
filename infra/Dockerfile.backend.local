@@ -1,0 +1,24 @@
+# Imagem de DESENVOLVIMENTO: o código é montado via volume pelo
+# docker-compose.local.yml e as dependências são instaladas no boot.
+FROM php:8.4-fpm-alpine
+
+RUN apk add --no-cache \
+    zip \
+    unzip \
+    curl \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    postgresql-client \
+    postgresql-dev
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd xml
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www
+
+EXPOSE 9000
+CMD ["php-fpm"]

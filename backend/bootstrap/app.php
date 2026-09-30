@@ -19,7 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: "/up",
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // A API só é alcançada via Traefik/Nginx: confia no proxy imediato para
+        // obter HTTPS e o IP real do cliente (URLs geradas e rate limit).
+        $middleware->trustProxies(at: "*");
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Rotas da API sempre respondem JSON (inclusive 401 sem redirect).
