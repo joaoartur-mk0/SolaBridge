@@ -7,7 +7,7 @@ use App\Models\MovimentacaoEstoque;
 use App\Models\TituloFinanceiro;
 use App\Models\Lancamento;
 use Illuminate\Support\Facades\DB;
-use Exception;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class CompraService
 {
@@ -130,7 +130,7 @@ class CompraService
                 ->findOrFail($id);
 
             if ($titulo->status === "CANCELADO") {
-                throw new Exception("Esta compra já está cancelada.");
+                throw new ConflictHttpException("Esta compra já está cancelada.");
             }
 
             foreach ($titulo->lancamentos as $lancamento) {
