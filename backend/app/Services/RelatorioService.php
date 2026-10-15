@@ -8,7 +8,7 @@ class RelatorioService
 {
     public function gerarDRE($dataInicio = null, $dataFim = null)
     {
-        $queryBase = Partida::with(["conta", "lancamento"]);
+        $queryBase = Partida::query();
         if ($dataInicio && $dataFim) {
             $queryBase->whereHas("lancamento", function ($q) use (
                 $dataInicio,
@@ -18,22 +18,13 @@ class RelatorioService
             });
         }
 
-        $queryReceitas = clone $queryBase;
-        $queryDespesas = clone $queryBase;
+        // Saldos líquidos: estornos (débito em receita / crédito em despesa)
+        // precisam abater os valores, senão vendas canceladas continuam no DRE.
+        $receitas = $this->somarPorNatureza(clone $queryBase, "RECEITA");
+        $despesas = $this->somarPorNatureza(clone $queryBase, "DESPESA");
 
-        $totalReceitas = $queryReceitas
-            ->whereHas("conta", function ($q) {
-                $q->where("tipo", "RECEITA");
-            })
-            ->where("natureza", "C")
-            ->sum("valor");
-
-        $totalDespesas = $queryDespesas
-            ->whereHas("conta", function ($q) {
-                $q->whereIn("tipo", ["DESPESA", "DEPESA"]);
-            })
-            ->where("natureza", "D")
-            ->sum("valor");
+        $totalReceitas = $receitas["C"] - $receitas["D"];
+        $totalDespesas = $despesas["D"] - $despesas["C"];
 
         $resultadoLiquido = $totalReceitas - $totalDespesas;
 
@@ -42,6 +33,25 @@ class RelatorioService
             "total_despesas" => $totalDespesas,
             "resultado_liquido" => $resultadoLiquido,
             "status" => $resultadoLiquido >= 0 ? "Lucro" : "Prejuizo",
+        ];
+    }
+
+    /**
+     * Soma as partidas de contas do tipo informado, separadas por natureza.
+     *
+     * @return array{D: float, C: float}
+     */
+    private function somarPorNatureza($query, string $tipo): array
+    {
+        $totais = $query
+            ->whereHas("conta", fn($q) => $q->where("tipo", $tipo))
+            ->selectRaw("natureza, SUM(valor) as total")
+            ->groupBy("natureza")
+            ->pluck("total", "natureza");
+
+        return [
+            "D" => (float) ($totais["D"] ?? 0),
+            "C" => (float) ($totais["C"] ?? 0),
         ];
     }
 

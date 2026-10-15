@@ -3,10 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use App\Http\Requests\Concerns\ValidaDoTenant;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLancamentoRequest extends FormRequest
 {
+    use ValidaDoTenant;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,13 +28,16 @@ class StoreLancamentoRequest extends FormRequest
         return [
             "description" => "required|string|max:500",
             "date" => "required|date",
-            "customer_id" => "nullable|exists:customers,id",
-            "supplier_id" => "nullable|exists:suppliers,id",
-            "titulo_id" => "nullable|exists:titulos_financeiros,id",
+            "customer_id" => ["nullable", $this->existeNoTenant("customers")],
+            "supplier_id" => ["nullable", $this->existeNoTenant("suppliers")],
+            "titulo_id" => [
+                "nullable",
+                $this->existeNoTenant("titulos_financeiros"),
+            ],
 
             "partidas" => "required|array|min:2",
 
-            "partidas.*.conta_id" => "required|exists:contas,id",
+            "partidas.*.conta_id" => ["required", $this->existeNoTenant("contas")],
             "partidas.*.valor" => "required|numeric|min:0.01",
             "partidas.*.natureza" => "required|in:D,C",
         ];
